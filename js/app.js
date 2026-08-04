@@ -241,92 +241,77 @@ function animateScoreNumber(targetScore) {
 // ========== 雷达图 ==========
 
 function renderRadarChart(scores) {
-  const canvas = document.getElementById('radar-chart');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-
-  const size = Math.min(canvas.parentElement.clientWidth - 32, 300);
-  canvas.width = size;
-  canvas.height = size;
-  const cx = size / 2, cy = size / 2, r = size * 0.35;
+  const svg = document.getElementById('radar-chart');
+  if (!svg) return;
 
   const labels = ['大学', '专业', '五行命理', '星座', 'MBTI'];
   const count = labels.length;
   const levels = 5;
+  const cx = 160, cy = 160, r = 110;
 
-  ctx.clearRect(0, 0, size, size);
+  // 计算顶点的辅助函数
+  function point(angle, radius) {
+    return {
+      x: cx + radius * Math.cos(angle - Math.PI / 2),
+      y: cy + radius * Math.sin(angle - Math.PI / 2)
+    };
+  }
 
-  // 绘制网格
+  let html = '';
+
+  // 绘制网格（5层多边形）
   for (let level = 1; level <= levels; level++) {
-    ctx.beginPath();
+    const lr = r * (level / levels);
+    let points = [];
     for (let i = 0; i < count; i++) {
-      const angle = (Math.PI * 2 * i) / count - Math.PI / 2;
-      const lr = r * (level / levels);
-      const x = cx + lr * Math.cos(angle);
-      const y = cy + lr * Math.sin(angle);
-      if (i === 0) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
+      const angle = (Math.PI * 2 * i) / count;
+      const p = point(angle, lr);
+      points.push(`${p.x},${p.y}`);
     }
-    ctx.closePath();
-    ctx.strokeStyle = '#e0e0e0';
-    ctx.lineWidth = 1;
-    ctx.stroke();
+    html += `<polygon points="${points.join(' ')}" fill="none" stroke="#e0e0e0" stroke-width="1"/>`;
   }
 
   // 绘制轴线
   for (let i = 0; i < count; i++) {
-    const angle = (Math.PI * 2 * i) / count - Math.PI / 2;
-    ctx.beginPath();
-    ctx.moveTo(cx, cy);
-    ctx.lineTo(cx + r * Math.cos(angle), cy + r * Math.sin(angle));
-    ctx.strokeStyle = '#e0e0e0';
-    ctx.lineWidth = 1;
-    ctx.stroke();
+    const angle = (Math.PI * 2 * i) / count;
+    const p = point(angle, r);
+    html += `<line x1="${cx}" y1="${cy}" x2="${p.x}" y2="${p.y}" stroke="#e0e0e0" stroke-width="1"/>`;
   }
 
   // 绘制数据区域
-  ctx.beginPath();
+  let dataPoints = [];
   for (let i = 0; i < count; i++) {
-    const angle = (Math.PI * 2 * i) / count - Math.PI / 2;
+    const angle = (Math.PI * 2 * i) / count;
     const lr = r * (scores[i] / 100);
-    const x = cx + lr * Math.cos(angle);
-    const y = cy + lr * Math.sin(angle);
-    if (i === 0) ctx.moveTo(x, y);
-    else ctx.lineTo(x, y);
+    const p = point(angle, lr);
+    dataPoints.push(`${p.x},${p.y}`);
   }
-  ctx.closePath();
-  ctx.fillStyle = 'rgba(74, 144, 217, 0.2)';
-  ctx.fill();
-  ctx.strokeStyle = '#4a90d9';
-  ctx.lineWidth = 2;
-  ctx.stroke();
+  html += `<polygon points="${dataPoints.join(' ')}" fill="rgba(74,144,217,0.15)" stroke="#4a90d9" stroke-width="2" stroke-linejoin="round"/>`;
 
   // 绘制数据点
   for (let i = 0; i < count; i++) {
-    const angle = (Math.PI * 2 * i) / count - Math.PI / 2;
+    const angle = (Math.PI * 2 * i) / count;
     const lr = r * (scores[i] / 100);
-    const x = cx + lr * Math.cos(angle);
-    const y = cy + lr * Math.sin(angle);
-    ctx.beginPath();
-    ctx.arc(x, y, 5, 0, Math.PI * 2);
-    ctx.fillStyle = '#4a90d9';
-    ctx.fill();
-    ctx.strokeStyle = '#fff';
-    ctx.lineWidth = 2;
-    ctx.stroke();
+    const p = point(angle, lr);
+    html += `<circle cx="${p.x}" cy="${p.y}" r="5" fill="#4a90d9" stroke="#fff" stroke-width="2"/>`;
   }
 
   // 绘制标签
-  ctx.fillStyle = '#666';
-  ctx.font = '13px -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif';
-  ctx.textAlign = 'center';
   for (let i = 0; i < count; i++) {
-    const angle = (Math.PI * 2 * i) / count - Math.PI / 2;
-    const lr = r + 24;
-    const x = cx + lr * Math.cos(angle);
-    const y = cy + lr * Math.sin(angle) + 5;
-    ctx.fillText(labels[i], x, y);
+    const angle = (Math.PI * 2 * i) / count;
+    const lp = point(angle, r + 20);
+    html += `<text x="${lp.x}" y="${lp.y + 5}" text-anchor="middle" fill="#666" font-size="13" font-family="SimSun,STSong,宋体,serif" font-weight="bold">${labels[i]}</text>`;
   }
+
+  // 绘制分数（在每个数据点旁边）
+  for (let i = 0; i < count; i++) {
+    const angle = (Math.PI * 2 * i) / count;
+    const lr = r * (scores[i] / 100) - 12;
+    const sp = point(angle, lr);
+    html += `<text x="${sp.x}" y="${sp.y + 4}" text-anchor="middle" fill="${getScoreColor(scores[i])}" font-size="11" font-family="SimSun,STSong,宋体,serif" font-weight="bold">${scores[i]}</text>`;
+  }
+
+  svg.innerHTML = html;
 }
 
 // ========== 环形进度条 ==========
