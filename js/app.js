@@ -165,6 +165,9 @@ function renderResult(result) {
   const adviceList = document.getElementById('result-advice');
   adviceList.innerHTML = result.advice.map(a => `<li>${a}</li>`).join('');
 
+  // 今日运势（基于五行+星座）
+  renderResultFortune(result);
+
   // 雷达图
   renderRadarChart([
     result.university.score,
@@ -180,6 +183,95 @@ function renderResult(result) {
   // 时间戳
   document.getElementById('result-time').textContent =
     '预测时间：' + new Date(result.timestamp).toLocaleString('zh-CN');
+}
+
+/**
+ * 在结果页渲染今日运势（基于五行命理+星座元素）
+ */
+function renderResultFortune(result) {
+  const container = document.getElementById('result-fortune-content');
+  if (!container) return;
+
+  const sb = result.stemBranch;
+  const zodiac = result.zodiac;
+  const today = new Date();
+  const daySeed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+
+  // 基于五行日主 + 星座元素 + 日期计算运势
+  const dayMaster = sb.dayMaster || {};
+  const zodiacElement = zodiac.element || '';
+  const strongest = sb.strongest || {};
+  const weakest = sb.weakest || {};
+
+  // 五行和星座综合运势分
+  const wuxingBase = sb.score || 60;
+  const zodiacBase = zodiac.score || 60;
+  const combinedBase = (wuxingBase * 0.6 + zodiacBase * 0.4);
+  const fluctuation = (seededRandom(daySeed) * 20 - 10);
+  const fortuneScore = Math.min(100, Math.max(25, Math.round(combinedBase + fluctuation)));
+
+  // 运势等级
+  let levelText, levelColor;
+  if (fortuneScore >= 80) { levelText = '大吉'; levelColor = '#c9a96e'; }
+  else if (fortuneScore >= 65) { levelText = '吉'; levelColor = '#5cb85c'; }
+  else if (fortuneScore >= 50) { levelText = '中平'; levelColor = '#4a90d9'; }
+  else if (fortuneScore >= 35) { levelText = '小凶'; levelColor = '#f0ad4e'; }
+  else { levelText = '大凶'; levelColor = '#d9534f'; }
+
+  // 基于五行生克生成宜忌
+  const dmEl = dayMaster.element || '木';
+  const shengEl = WUXING_SHENG[dmEl] || '火';  // 日主所生
+  const keEl = WUXING_KE[dmEl] || '土';        // 日主所克
+  const shengMeEl = Object.keys(WUXING_SHENG).find(k => WUXING_SHENG[k] === dmEl) || '水'; // 生我者
+
+  const yi = [
+    `多接触${shengEl}属性的事物`, `与${shengMeEl}属性的人合作`,
+    `发挥${dmEl}的${WUXING_TRAITS[dmEl].trait}`, `在${WUXING_TRAITS[shengEl].career}方面发力`
+  ];
+  const ji = [
+    `避免与${keEl}属性的人冲突`, `少做${WUXING_TRAITS[keEl].career}相关的决策`,
+    `不要过度消耗${dmEl}的能量`, `忌急躁，${dmEl}需顺势而为`
+  ];
+
+  // 星座元素运势解读
+  const elementMap = { '火': '火象', '土': '土象', '风': '风象', '水': '水象' };
+  const zodiacEleType = elementMap[zodiacElement] || '';
+  const zodiacInsight = zodiacEleType
+    ? `你的星座属${zodiacEleType}，${zodiacElement === '火' ? '行动力强但需控制冲动' : zodiacElement === '土' ? '稳重务实但需灵活应变' : zodiacElement === '风' ? '思维敏捷但需落地执行' : zodiacElement === '水' ? '情感丰富但需理性决策' : ''}。`
+    : '';
+
+  // 日主今日运势解读
+  const dayMasterInsight = `今日日主「${dmEl}」${shengEl ? `生${shengEl}` : ''}，${keEl ? `克${keEl}` : ''}，${shengMeEl ? `被${shengMeEl}所生` : ''}。五行流转之间，${fortuneScore >= 60 ? '顺势而上' : '以守为攻'}是今天的关键词。`;
+
+  container.innerHTML = `
+    <div class="result-fortune">
+      <div class="rf-score-row">
+        <div class="rf-score" style="color:${levelColor}">${fortuneScore}</div>
+        <div class="rf-level" style="color:${levelColor}">${levelText}</div>
+      </div>
+      <p class="rf-desc">${dayMasterInsight}</p>
+      <p class="rf-desc">${zodiacInsight}</p>
+      <div class="rf-meta">
+        <span>☀️ 日主：${dayMaster.emoji || ''}${dmEl} ${sb.deLing ? '· 得令' : '· 失令'}</span>
+        <span>${zodiac.emoji || ''} ${zodiac.name} · ${zodiacElement}象</span>
+      </div>
+      <div class="rf-elements">
+        <span>最强：${strongest.emoji || ''}${strongest.element || '--'}</span>
+        <span>最弱：${weakest.emoji || ''}${weakest.element || '--'}</span>
+        <span>平衡：${sb.balance || 0}</span>
+      </div>
+      <div class="yi-ji" style="margin-top:12px;">
+        <div class="yi">
+          <h4>✅ 今日宜</h4>
+          <ul>${yi.map(item => `<li>${item}</li>`).join('')}</ul>
+        </div>
+        <div class="ji">
+          <h4>❌ 今日忌</h4>
+          <ul>${ji.map(item => `<li>${item}</li>`).join('')}</ul>
+        </div>
+      </div>
+    </div>
+  `;
 }
 
 function renderDimensionDetail(id, data, label) {

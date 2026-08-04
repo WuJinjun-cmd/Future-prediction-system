@@ -430,6 +430,56 @@ h1, h2, h3, h4, h5, h6,
   margin-top: 8px;
 }
 
+/* ========== 结果页运势卡片 ========== */
+.result-fortune {
+  text-align: center;
+}
+
+.rf-score-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.rf-score {
+  font-size: 42px;
+  font-weight: 700;
+  font-family: var(--font-heading);
+}
+
+.rf-level {
+  font-size: 20px;
+  font-weight: 700;
+  font-family: var(--font-heading);
+}
+
+.rf-desc {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+  margin-bottom: 6px;
+  padding: 0 8px;
+}
+
+.rf-meta {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin: 12px 0 8px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.rf-elements {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
 /* ========== 每日运势 ========== */
 .fortune-card {
   background: var(--color-surface);
