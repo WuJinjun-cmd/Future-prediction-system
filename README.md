@@ -158,6 +158,12 @@ Future-prediction-system/
 
 **English**: This system is for entertainment purposes only. Scores and analyses do not constitute professional advice. Five Elements, zodiac, and MBTI interpretations are playful takes on traditional culture and modern psychology. Your future is what you make of it ✨
 
+## 🔒 隐私声明 | Privacy
+
+**中文**：本系统所有数据均存储在您浏览器的 localStorage 中，**不会收集、上传或参考您的任何个人信息**。姓名、大学、专业、出生日期、MBTI 等数据仅用于生成当次预测结果，服务器不会接收或存储这些信息。清除浏览器缓存即可彻底删除所有数据。
+
+**English**: All data is stored locally in your browser's localStorage. **No personal information is collected, uploaded, or referenced**. Your name, university, major, birth date, MBTI, and other inputs are used solely to generate your prediction results — no data is ever sent to or stored on any server. Clear your browser cache to permanently delete all data.
+
 ---
 
 ## 📄 License
