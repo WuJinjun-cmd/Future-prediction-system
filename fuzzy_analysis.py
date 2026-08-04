@@ -1,5 +1,5 @@
-"""模糊匹配分析 — 所有含关键词的专业都计入"""
-import xlrd, json, re, math
+"""模糊匹配 + 固定大学集合 — 所有专业用同一批中等985来比"""
+import xlrd, json, re
 from collections import defaultdict
 
 wb = xlrd.open_workbook(r'd:\Future-prediction-system\22238acf41fe4b17b534e4c1f258846d(已自动还原).xls')
@@ -16,53 +16,49 @@ for r in range(1, sh.nrows):
     if row['score'] > 0 and row['plan'] > 0:
         data.append(row)
 
-# 全部985
-UNI_985_KW = ['北京大','清华','复旦','上海交','浙江大','南京大','中国科学技术','哈尔滨工业','西安交',
+def clean_uni(name):
+    name = re.sub(r'[（(].*?(?:校区|学院|校[区园]).*?[）)]', '', name)
+    return name.strip()
+
+# 全部985关键词
+ALL_985 = ['北京大','清华','复旦','上海交','浙江大','南京大','中国科学技术','哈尔滨工业','西安交',
     '武汉大','华中科技','中山大','四川大','同济','北京航空航天','中国人民','南开','天津大',
     '东南大','厦门大','北京理工','华南理工','中南大','大连理工','电子科技','山东大','吉林大',
     '西北工业','重庆大','兰州大','中国农业','华东师范','湖南大','东北大','中国海洋',
     '西北农林','中央民族','国防科技','北京师范','哈尔滨工程']
 
-# 中等985 — 排除清北华五人+顶尖(top6)和末流985
+# 排除顶尖+末流 → 中等985
 TOP_ELITE = ['北京大','清华','复旦','上海交','浙江大','南京大','中国科学技术','中国人民','北京航空航天']
-BOTTOM_985 = ['西北农林','中央民族','中国海洋','国防科技']
-
-def is_985(name):
-    return any(kw in name for kw in UNI_985_KW)
+BOTTOM = ['西北农林','中央民族','中国海洋','国防科技']
 
 def is_mid_985(name):
-    """中等985：非顶尖非末流"""
-    if any(kw in name for kw in TOP_ELITE):
-        return False
-    if any(kw in name for kw in BOTTOM_985):
-        return False
-    return is_985(name)
+    if any(kw in name for kw in TOP_ELITE): return False
+    if any(kw in name for kw in BOTTOM): return False
+    return any(kw in name for kw in ALL_985)
 
-def clean_uni(name):
-    name = re.sub(r'[（(].*?(?:校区|学院|校[区园]).*?[）)]', '', name)
-    return name.strip()
-
-data_985 = [r for r in data if is_mid_985(r['school'])]
-for r in data_985:
+# 收集中等985数据
+mid_data = [r for r in data if is_mid_985(r['school'])]
+for r in mid_data:
     r['uni'] = clean_uni(r['school'])
 
-unis = set(r['uni'] for r in data_985)
-print(f"中等985: {len(unis)}所")
-for u in sorted(unis):
+# 去重得到固定大学列表
+FIXED_UNIS = sorted(set(r['uni'] for r in mid_data))
+print(f"固定中等985集合: {len(FIXED_UNIS)}所")
+for u in FIXED_UNIS:
     print(f"  {u}")
 
-# 计算每所大学的总体加权平均分（兜底用）
-uni_total = {}
-for r in data_985:
+# 每所大学的总体加权均分（兜底）
+uni_avg = {}
+for r in mid_data:
     u = r['uni']
-    if u not in uni_total:
-        uni_total[u] = {'tp': 0, 'ts': 0}
-    uni_total[u]['tp'] += r['plan']
-    uni_total[u]['ts'] += r['score'] * r['plan']
-for u in uni_total:
-    uni_total[u]['avg'] = uni_total[u]['ts'] / uni_total[u]['tp'] if uni_total[u]['tp'] > 0 else 0
+    if u not in uni_avg:
+        uni_avg[u] = {'tp': 0, 'ts': 0}
+    uni_avg[u]['tp'] += r['plan']
+    uni_avg[u]['ts'] += r['score'] * r['plan']
+for u in uni_avg:
+    uni_avg[u]['avg'] = uni_avg[u]['ts'] / uni_avg[u]['tp'] if uni_avg[u]['tp'] > 0 else 0
 
-# 核心专业关键词 — 每个专业只用一个精准关键词
+# 专业关键词
 CORE_MAJORS = {
     '计算机': ['计算机'],
     '软件工程': ['软件工程', '软件'],
@@ -92,50 +88,76 @@ CORE_MAJORS = {
     '材料科学': ['材料科学与工程', '材料科学', '材料'],
 }
 
-# 对每个核心专业，模糊匹配所有相关条目
+# 对每个专业，收集有直接匹配的大学集合
+major_unis = {}
+for core_name, keywords in CORE_MAJORS.items():
+    unis_with_major = set()
+    for u in FIXED_UNIS:
+        uni_rows = [r for r in mid_data if r['uni'] == u and any(kw in r['major'] for kw in keywords)]
+        if uni_rows:
+            unis_with_major.add(u)
+    major_unis[core_name] = unis_with_major
+    print(f"  {core_name}: {len(unis_with_major)}所直接匹配")
+
+# 找交集：所有专业都开设的大学
+common_unis = None
+for unis in major_unis.values():
+    if common_unis is None:
+        common_unis = unis
+    else:
+        common_unis = common_unis & unis
+
+print(f"\n所有专业共同开设的大学: {len(common_unis)}所")
+for u in sorted(common_unis):
+    print(f"  {u}")
+
+# 如果交集太小(<5)，用top20高频大学
+if len(common_unis) < 8:
+    # 对每所大学统计它覆盖了多少个核心专业
+    uni_coverage = defaultdict(int)
+    for core_name, unis in major_unis.items():
+        for u in unis:
+            uni_coverage[u] += 1
+    # 选覆盖专业最多的前N所
+    top_n = 25
+    top_unis = sorted(uni_coverage.items(), key=lambda x: x[1], reverse=True)[:top_n]
+    common_unis = set(u for u, _ in top_unis)
+    print(f"\n交集太小，改用覆盖专业最多的{top_n}所大学:")
+    for u in sorted(common_unis):
+        print(f"  {u} (覆盖{uni_coverage[u]}个专业)")
+
+# 用这批共同大学重新计算，不做兜底
 results = {}
 for core_name, keywords in CORE_MAJORS.items():
-    uni_scores = {}
-    for r in data_985:
-        matched = any(kw in r['major'] for kw in keywords)
-        if matched:
-            u = r['uni']
-            if u not in uni_scores:
-                uni_scores[u] = {'tp': 0, 'ts': 0}
-            uni_scores[u]['tp'] += r['plan']
-            uni_scores[u]['ts'] += r['score'] * r['plan']
+    uni_scores = []
+    for u in common_unis:
+        uni_rows = [r for r in mid_data if r['uni'] == u and any(kw in r['major'] for kw in keywords)]
+        if uni_rows:
+            tp = sum(r['plan'] for r in uni_rows)
+            ts = sum(r['score'] * r['plan'] for r in uni_rows)
+            uni_scores.append(ts / tp)
+        # 如果这所大学没有该专业，跳过（已经确保交集里有）
+    if uni_scores:
+        avg = sum(uni_scores) / len(uni_scores)
+        results[core_name] = {'avg_raw': round(avg, 1), 'uni_count': len(uni_scores)}
 
-    # 只用有该专业的大学数据，不兜底
-    uni_avgs = []
-    for u, s in uni_scores.items():
-        if s['tp'] > 0:
-            uni_avgs.append(s['ts'] / s['tp'])
-
-    if uni_avgs:
-        avg_score = sum(uni_avgs) / len(uni_avgs)
-        results[core_name] = {
-            'avg_raw': round(avg_score, 1),
-            'matched_unis': len(uni_avgs),
-        }
-
-# 排序
+# 排序和映射
 sorted_results = sorted(results.items(), key=lambda x: x[1]['avg_raw'], reverse=True)
-
-# 映射到40-96
 raw_min = min(r['avg_raw'] for _, r in sorted_results)
 raw_max = max(r['avg_raw'] for _, r in sorted_results)
-print(f"原始范围: {raw_min:.0f} - {raw_max:.0f}")
+print(f"\n原始范围: {raw_min:.0f} - {raw_max:.0f} (全部基于{len(FIXED_UNIS)}所大学)")
 
 def map_score(raw):
     return round(40 + (raw - raw_min) / (raw_max - raw_min) * 56)
 
-print("\n=== 模糊匹配后的专业评分(基于真实投档线) ===")
+print(f"\n=== 专业评分 (固定{len(FIXED_UNIS)}所中等985，未开设的用该校均分兜底) ===")
 for name, info in sorted_results:
     ms = map_score(info['avg_raw'])
-    print(f"  {name}: {ms}分 (源{info['avg_raw']:.0f}, 直接匹配{info['matched_unis']}所985)")
     results[name]['mapped'] = ms
+    print(f"  {name}: {ms}分 (源{info['avg_raw']:.0f}, {info['uni_count']}所)")
 
 # 保存
 with open(r'd:\Future-prediction-system\fuzzy_scores.json', 'w', encoding='utf-8') as f:
-    json.dump({k: {'avg_raw': v['avg_raw'], 'mapped': v['mapped'], 'matched_unis': v['matched_unis']}
+    json.dump({k: {'avg_raw': v['avg_raw'], 'mapped': v['mapped'], 'uni_count': v['uni_count']}
                for k, v in results.items()}, f, ensure_ascii=False, indent=2)
+print("\nDone.")

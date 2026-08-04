@@ -54,7 +54,7 @@ for kw, info in fuzzy.items():
                 new = match.group(1) + str(score)
                 content = content[:match.start()] + new + content[match.end():]
                 applied += 1
-                print(f"  {major_name}: {score} (源{fuzzy[kw]['avg_raw']:.0f}, {fuzzy[kw]['matched_unis']}所)")
+                print(f"  {major_name}: {score} (源{fuzzy[kw]['avg_raw']:.0f}, {fuzzy[kw]['uni_count']}所)")
 
 with open(r'd:\Future-prediction-system\js\data.js', 'w', encoding='utf-8') as f:
     f.write(content)

@@ -1,127 +1,127 @@
 {
   "计算机": {
-    "avg_raw": 634.5,
-    "mapped": 80,
-    "matched_unis": 34
+    "avg_raw": 642.7,
+    "mapped": 83,
+    "uni_count": 25
   },
   "软件工程": {
-    "avg_raw": 625.2,
-    "mapped": 75,
-    "matched_unis": 19
+    "avg_raw": 643.8,
+    "mapped": 84,
+    "uni_count": 14
   },
   "人工智能": {
-    "avg_raw": 631.3,
-    "mapped": 79,
-    "matched_unis": 24
+    "avg_raw": 643.6,
+    "mapped": 83,
+    "uni_count": 17
   },
   "数据科学": {
-    "avg_raw": 621.7,
-    "mapped": 74,
-    "matched_unis": 15
+    "avg_raw": 630.1,
+    "mapped": 75,
+    "uni_count": 10
   },
   "临床医学": {
-    "avg_raw": 660.1,
-    "mapped": 94,
-    "matched_unis": 11
+    "avg_raw": 659.2,
+    "mapped": 93,
+    "uni_count": 10
   },
   "口腔医学": {
     "avg_raw": 661.9,
     "mapped": 95,
-    "matched_unis": 6
+    "uni_count": 6
   },
   "药学": {
-    "avg_raw": 646.2,
+    "avg_raw": 649.7,
     "mapped": 87,
-    "matched_unis": 4
+    "uni_count": 3
   },
   "电子信息": {
-    "avg_raw": 639.8,
-    "mapped": 83,
-    "matched_unis": 30
+    "avg_raw": 640.6,
+    "mapped": 81,
+    "uni_count": 24
   },
   "通信工程": {
-    "avg_raw": 620.3,
-    "mapped": 73,
-    "matched_unis": 17
+    "avg_raw": 634.6,
+    "mapped": 78,
+    "uni_count": 14
   },
   "电子科学": {
-    "avg_raw": 615.6,
-    "mapped": 70,
-    "matched_unis": 7
+    "avg_raw": 628.4,
+    "mapped": 74,
+    "uni_count": 5
   },
   "微电子": {
     "avg_raw": 663.5,
     "mapped": 96,
-    "matched_unis": 7
+    "uni_count": 7
   },
   "集成电路": {
-    "avg_raw": 649.6,
-    "mapped": 89,
-    "matched_unis": 11
+    "avg_raw": 660.2,
+    "mapped": 94,
+    "uni_count": 9
   },
   "电气工程": {
-    "avg_raw": 614.0,
-    "mapped": 69,
-    "matched_unis": 22
+    "avg_raw": 632.6,
+    "mapped": 76,
+    "uni_count": 15
   },
   "自动化": {
-    "avg_raw": 606.8,
-    "mapped": 66,
-    "matched_unis": 26
+    "avg_raw": 634.5,
+    "mapped": 78,
+    "uni_count": 19
   },
   "金融学": {
-    "avg_raw": 618.6,
-    "mapped": 72,
-    "matched_unis": 16
+    "avg_raw": 630.6,
+    "mapped": 75,
+    "uni_count": 13
   },
   "经济学": {
-    "avg_raw": 648.3,
-    "mapped": 88,
-    "matched_unis": 16
+    "avg_raw": 656.1,
+    "mapped": 91,
+    "uni_count": 12
   },
   "会计学": {
-    "avg_raw": 607.6,
-    "mapped": 66,
-    "matched_unis": 15
+    "avg_raw": 617.6,
+    "mapped": 67,
+    "uni_count": 10
   },
   "法学": {
-    "avg_raw": 654.1,
-    "mapped": 91,
-    "matched_unis": 20
+    "avg_raw": 653.3,
+    "mapped": 90,
+    "uni_count": 16
   },
   "数学": {
-    "avg_raw": 657.9,
-    "mapped": 93,
-    "matched_unis": 20
+    "avg_raw": 657.7,
+    "mapped": 92,
+    "uni_count": 17
   },
   "物理学": {
-    "avg_raw": 654.6,
+    "avg_raw": 655.4,
     "mapped": 91,
-    "matched_unis": 13
+    "uni_count": 9
   },
   "统计学": {
     "avg_raw": 647.5,
-    "mapped": 87,
-    "matched_unis": 5
+    "mapped": 86,
+    "uni_count": 5
   },
   "机械工程": {
-    "avg_raw": 658.6,
-    "mapped": 93,
-    "matched_unis": 9
+    "avg_raw": 657.9,
+    "mapped": 92,
+    "uni_count": 7
   },
   "土木工程": {
-    "avg_raw": 559.2,
+    "avg_raw": 575.2,
     "mapped": 40,
-    "matched_unis": 5
+    "uni_count": 4
   },
   "建筑学": {
     "avg_raw": 600.0,
-    "mapped": 62,
-    "matched_unis": 2
+    "mapped": 56,
+    "uni_count": 2
   },
   "材料科学": {
-    "avg_raw": 638.8,
-    "mapped": 83,
-    "matched_unis": 15
+    "avg_raw": 635.9,
+    "mapped": 78,
+    "uni_count": 12
   }
 }
