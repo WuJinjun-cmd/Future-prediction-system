@@ -451,12 +451,31 @@ function renderFortune() {
  * 处理抽签
  */
 function handleDrawStick() {
+  const profile = getProfile();
+
+  // 没有用户信息时提示先去预测页填写
+  if (!profile || (!profile.birthYear && !profile.mbti)) {
+    showToast('请先在「预测首页」填写个人信息，才能抽到专属你的签文 🙏', 'warning');
+    return;
+  }
+
+  // 基于日期 + 用户信息生成唯一种子（每人每天不同）
   const today = new Date();
-  const seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
-  const stick = drawStick(seed);
+  const dateNum = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+  const profileStr = [
+    profile.university || '', profile.major || '',
+    profile.birthYear || '', profile.birthMonth || '', profile.birthDay || '',
+    profile.birthHour || '', profile.mbti || ''
+  ].join('|');
+  // 简单字符串哈希
+  let hash = dateNum;
+  for (let i = 0; i < profileStr.length; i++) {
+    hash = ((hash << 5) - hash) + profileStr.charCodeAt(i);
+    hash |= 0;
+  }
+  const stick = drawStick(Math.abs(hash));
 
   const resultEl = document.getElementById('draw-result');
-  const areaEl = document.getElementById('draw-area');
 
   // 动画：签筒抖动
   const tube = document.getElementById('draw-tube');
