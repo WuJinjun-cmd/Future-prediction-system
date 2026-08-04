@@ -266,6 +266,13 @@ h1, h2, h3, h4, h5, h6,
   transform: translateY(0);
 }
 
+.privacy-notice {
+  text-align: center;
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin-top: 12px;
+}
+
 .btn-small {
   padding: 6px 14px;
   font-size: 13px;
