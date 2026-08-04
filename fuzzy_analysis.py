@@ -16,26 +16,40 @@ for r in range(1, sh.nrows):
     if row['score'] > 0 and row['plan'] > 0:
         data.append(row)
 
-# 985模式
+# 全部985
 UNI_985_KW = ['北京大','清华','复旦','上海交','浙江大','南京大','中国科学技术','哈尔滨工业','西安交',
     '武汉大','华中科技','中山大','四川大','同济','北京航空航天','中国人民','南开','天津大',
     '东南大','厦门大','北京理工','华南理工','中南大','大连理工','电子科技','山东大','吉林大',
     '西北工业','重庆大','兰州大','中国农业','华东师范','湖南大','东北大','中国海洋',
-    '西北农林','中央民族','国防科技','北京师范']
+    '西北农林','中央民族','国防科技','北京师范','哈尔滨工程']
+
+# 中等985 — 排除清北华五人+顶尖(top6)和末流985
+TOP_ELITE = ['北京大','清华','复旦','上海交','浙江大','南京大','中国科学技术','中国人民','北京航空航天']
+BOTTOM_985 = ['西北农林','中央民族','中国海洋','国防科技']
 
 def is_985(name):
     return any(kw in name for kw in UNI_985_KW)
+
+def is_mid_985(name):
+    """中等985：非顶尖非末流"""
+    if any(kw in name for kw in TOP_ELITE):
+        return False
+    if any(kw in name for kw in BOTTOM_985):
+        return False
+    return is_985(name)
 
 def clean_uni(name):
     name = re.sub(r'[（(].*?(?:校区|学院|校[区园]).*?[）)]', '', name)
     return name.strip()
 
-data_985 = [r for r in data if is_985(r['school'])]
+data_985 = [r for r in data if is_mid_985(r['school'])]
 for r in data_985:
     r['uni'] = clean_uni(r['school'])
 
 unis = set(r['uni'] for r in data_985)
-print(f"985高校: {len(unis)}所")
+print(f"中等985: {len(unis)}所")
+for u in sorted(unis):
+    print(f"  {u}")
 
 # 计算每所大学的总体加权平均分（兜底用）
 uni_total = {}
