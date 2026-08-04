@@ -60,16 +60,6 @@ function checkSpecialPerson(profile) {
   }
   return null;
 }
-    stemBranch,
-    zodiac,
-    mbti,
-    total,
-    grade,
-    advice,
-    timestamp: Date.now(),
-    id: generateId()
-  };
-}
 
 /**
  * 大学评分
