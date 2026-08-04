@@ -193,11 +193,11 @@ function renderResult(result) {
   // 今日运势（基于五行+星座）
   renderResultFortune(result);
 
-  // 雷达图
+  // 雷达图（分数封顶100以保证图表比例）
   renderRadarChart([
     result.university.score,
     result.major.score,
-    result.stemBranch.score,
+    Math.min(100, result.stemBranch.score),
     result.zodiac.score,
     result.mbti.score
   ]);
@@ -233,14 +233,14 @@ function renderResultFortune(result) {
   const zodiacBase = zodiac.score || 60;
   const combinedBase = (wuxingBase * 0.6 + zodiacBase * 0.4);
   const fluctuation = (seededRandom(daySeed) * 20 - 10);
-  const fortuneScore = Math.min(100, Math.max(25, Math.round(combinedBase + fluctuation)));
+  const fortuneScore = Math.min(120, Math.max(40, Math.round(combinedBase + fluctuation)));
 
   // 运势等级
   let levelText, levelColor;
-  if (fortuneScore >= 80) { levelText = '大吉'; levelColor = '#c9a96e'; }
-  else if (fortuneScore >= 65) { levelText = '吉'; levelColor = '#5cb85c'; }
-  else if (fortuneScore >= 50) { levelText = '中平'; levelColor = '#4a90d9'; }
-  else if (fortuneScore >= 35) { levelText = '小凶'; levelColor = '#f0ad4e'; }
+  if (fortuneScore >= 95) { levelText = '大吉'; levelColor = '#c9a96e'; }
+  else if (fortuneScore >= 80) { levelText = '吉'; levelColor = '#5cb85c'; }
+  else if (fortuneScore >= 60) { levelText = '中平'; levelColor = '#4a90d9'; }
+  else if (fortuneScore >= 45) { levelText = '小凶'; levelColor = '#f0ad4e'; }
   else { levelText = '大凶'; levelColor = '#d9534f'; }
 
   // 基于五行生克生成宜忌
@@ -266,7 +266,7 @@ function renderResultFortune(result) {
     : '';
 
   // 日主今日运势解读
-  const dayMasterInsight = `今日日主「${dmEl}」${shengEl ? `生${shengEl}` : ''}，${keEl ? `克${keEl}` : ''}，${shengMeEl ? `被${shengMeEl}所生` : ''}。五行流转之间，${fortuneScore >= 60 ? '顺势而上' : '以守为攻'}是今天的关键词。`;
+  const dayMasterInsight = `今日日主「${dmEl}」${shengEl ? `生${shengEl}` : ''}，${keEl ? `克${keEl}` : ''}，${shengMeEl ? `被${shengMeEl}所生` : ''}。五行流转之间，${fortuneScore >= 75 ? '顺势而上' : '以守为攻'}是今天的关键词。`;
 
   container.innerHTML = `
     <div class="result-fortune">

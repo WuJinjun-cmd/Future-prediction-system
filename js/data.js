@@ -587,7 +587,7 @@ function analyzeWuxing(year, month, day, hour) {
     balance: balance,
     dayMasterStrength: dayMasterStrength,
     deLing: deLing,
-    score: Math.min(100, Math.max(30, Math.round(rawScore))),
+    score: Math.min(120, Math.max(40, Math.round(rawScore))),
     advice: generateWuxingAdvice(dayMasterElement, wuxingScore, deLing, balance)
   };
 }

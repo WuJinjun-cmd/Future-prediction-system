@@ -15,8 +15,15 @@ function calculateScore(profile) {
   const zodiac = calcZodiac(profile.birthMonth, profile.birthDay);
   const mbti = calcMBTI(profile.mbti || '');
 
-  const scores = [university.score, major.score, stemBranch.score, zodiac.score, mbti.score];
-  let total = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+  // 五行命理上限120，计算总分时封顶100以保持均分合理
+  const cappedScores = [
+    university.score,
+    major.score,
+    Math.min(100, stemBranch.score),
+    zodiac.score,
+    mbti.score
+  ];
+  let total = Math.round(cappedScores.reduce((a, b) => a + b, 0) / cappedScores.length);
 
   // 特殊人物检测
   const specialPerson = checkSpecialPerson(profile);
