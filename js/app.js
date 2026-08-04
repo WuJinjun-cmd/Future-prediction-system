@@ -1,0 +1,537 @@
+/**
+ * 前途预测系统 — 应用主控制器
+ */
+
+// ========== 初始化 ==========
+document.addEventListener('DOMContentLoaded', () => {
+  initTabs();
+  initForm();
+  initHistoryTab();
+  initFortuneTab();
+  handleHashRoute();
+
+  // 监听 hash 变化
+  window.addEventListener('hashchange', handleHashRoute);
+});
+
+// ========== Tab 导航 ==========
+
+function initTabs() {
+  const tabs = document.querySelectorAll('.nav-tab');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const target = tab.dataset.tab;
+      switchTab(target);
+      // 更新 URL hash
+      window.location.hash = target;
+    });
+  });
+}
+
+function switchTab(tabName) {
+  // 更新 Tab 按钮状态
+  document.querySelectorAll('.nav-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.tab === tabName);
+  });
+
+  // 更新面板显示
+  document.querySelectorAll('.panel').forEach(p => {
+    p.classList.toggle('active', p.id === 'panel-' + tabName);
+  });
+
+  // 如果切换到运势 Tab，刷新运势
+  if (tabName === 'fortune') {
+    renderFortune();
+  }
+
+  // 如果切换到历史 Tab，刷新历史
+  if (tabName === 'history') {
+    renderHistory();
+  }
+
+  // 滚动到顶部
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function handleHashRoute() {
+  const hash = window.location.hash.replace('#', '');
+  const validTabs = ['home', 'result', 'fortune', 'history'];
+  const target = validTabs.includes(hash) ? hash : 'home';
+
+  // 如果目标是 result 但没有数据，跳回 home
+  if (target === 'result' && !getProfile()) {
+    switchTab('home');
+    window.location.hash = 'home';
+    return;
+  }
+
+  switchTab(target);
+}
+
+// ========== 预测表单 ==========
+
+function initForm() {
+  // 加载已保存的 profile 回填表单
+  const profile = getProfile();
+  if (profile) {
+    document.getElementById('input-university').value = profile.university || '';
+    document.getElementById('input-major').value = profile.major || '';
+    document.getElementById('input-birthyear').value = profile.birthYear || '';
+    document.getElementById('input-birthmonth').value = profile.birthMonth || '';
+    document.getElementById('input-birthday').value = profile.birthDay || '';
+    document.getElementById('input-mbti').value = profile.mbti || '';
+  }
+
+  // 绑定提交事件
+  document.getElementById('btn-predict').addEventListener('click', handlePredict);
+
+  // 回车键提交
+  document.querySelectorAll('#panel-home input, #panel-home select').forEach(el => {
+    el.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') handlePredict();
+    });
+  });
+}
+
+function handlePredict() {
+  // 收集表单数据
+  const profile = {
+    university: document.getElementById('input-university').value.trim(),
+    major: document.getElementById('input-major').value.trim(),
+    birthYear: parseInt(document.getElementById('input-birthyear').value) || null,
+    birthMonth: parseInt(document.getElementById('input-birthmonth').value) || null,
+    birthDay: parseInt(document.getElementById('input-birthday').value) || null,
+    mbti: document.getElementById('input-mbti').value.trim().toUpperCase()
+  };
+
+  // 基本验证：至少填写2项
+  const filledCount = [
+    profile.university, profile.major,
+    profile.birthYear, profile.mbti
+  ].filter(Boolean).length;
+
+  if (filledCount < 2) {
+    showToast('请至少填写2项信息以获得更准确的预测结果', 'warning');
+    return;
+  }
+
+  // 保存用户信息
+  saveProfile(profile);
+
+  // 计算预测
+  const result = calculateScore(profile);
+
+  // 保存到历史
+  savePrediction(result);
+
+  // 渲染结果
+  renderResult(result);
+
+  // 播放动画
+  animateScoreNumber(result.total);
+
+  // 切换到结果页
+  switchTab('result');
+  window.location.hash = 'result';
+
+  showToast('预测完成！✨', 'success');
+}
+
+// ========== 结果渲染 ==========
+
+function renderResult(result) {
+  // 总分
+  document.getElementById('result-total').textContent = result.total;
+  document.getElementById('result-grade').textContent = result.grade.label;
+  document.getElementById('result-grade').style.color = result.grade.color;
+
+  // 评级描述
+  document.getElementById('result-grade-desc').textContent = result.grade.desc;
+
+  // 各维度详情
+  renderDimensionDetail('dim-uni', result.university, '大学');
+  renderDimensionDetail('dim-major', result.major, '专业');
+  renderDimensionDetail('dim-stem', result.stemBranch, '天干地支');
+  renderDimensionDetail('dim-zodiac', result.zodiac, '星座');
+  renderDimensionDetail('dim-mbti', result.mbti, 'MBTI');
+
+  // 建议
+  const adviceList = document.getElementById('result-advice');
+  adviceList.innerHTML = result.advice.map(a => `<li>${a}</li>`).join('');
+
+  // 雷达图
+  renderRadarChart([
+    result.university.score,
+    result.major.score,
+    result.stemBranch.score,
+    result.zodiac.score,
+    result.mbti.score
+  ]);
+
+  // 环形进度条
+  renderRingProgress(result.total);
+
+  // 时间戳
+  document.getElementById('result-time').textContent =
+    '预测时间：' + new Date(result.timestamp).toLocaleString('zh-CN');
+}
+
+function renderDimensionDetail(id, data, label) {
+  const el = document.getElementById(id);
+  if (!el) return;
+
+  let name, score, detail;
+  if (label === '大学') {
+    name = data.name; score = data.score; detail = `${data.level || ''} · ${data.tier || ''}`;
+  } else if (label === '专业') {
+    name = data.name; score = data.score; detail = `${data.category || ''} · 需求${data.demand || '--'}`;
+  } else if (label === '天干地支') {
+    name = data.stemBranch; score = data.score; detail = `天干${data.tianGan}(${data.ganElement})${data.ganTrait}`;
+  } else if (label === '星座') {
+    name = `${data.emoji || ''} ${data.name}`; score = data.score; detail = data.trait || '';
+  } else if (label === 'MBTI') {
+    name = `${data.type} (${data.name})`; score = data.score; detail = data.trait || '';
+  }
+
+  el.querySelector('.dim-name').textContent = name;
+  el.querySelector('.dim-score').textContent = score;
+  el.querySelector('.dim-detail').textContent = detail;
+  el.querySelector('.dim-bar-fill').style.width = score + '%';
+  el.querySelector('.dim-bar-fill').style.backgroundColor = getScoreColor(score);
+}
+
+function getScoreColor(score) {
+  if (score >= 85) return '#5cb85c';
+  if (score >= 70) return '#4a90d9';
+  if (score >= 55) return '#f0ad4e';
+  return '#d9534f';
+}
+
+function animateScoreNumber(targetScore) {
+  const el = document.getElementById('result-total');
+  const duration = 1200;
+  const startTime = performance.now();
+  const startScore = 0;
+
+  function step(currentTime) {
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    // easeOutCubic
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const current = Math.round(startScore + (targetScore - startScore) * eased);
+    el.textContent = current;
+    if (progress < 1) {
+      requestAnimationFrame(step);
+    }
+  }
+
+  requestAnimationFrame(step);
+}
+
+// ========== 雷达图 ==========
+
+function renderRadarChart(scores) {
+  const canvas = document.getElementById('radar-chart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  const size = Math.min(canvas.parentElement.clientWidth - 32, 300);
+  canvas.width = size;
+  canvas.height = size;
+  const cx = size / 2, cy = size / 2, r = size * 0.35;
+
+  const labels = ['大学', '专业', '天干地支', '星座', 'MBTI'];
+  const count = labels.length;
+  const levels = 5;
+
+  ctx.clearRect(0, 0, size, size);
+
+  // 绘制网格
+  for (let level = 1; level <= levels; level++) {
+    ctx.beginPath();
+    for (let i = 0; i < count; i++) {
+      const angle = (Math.PI * 2 * i) / count - Math.PI / 2;
+      const lr = r * (level / levels);
+      const x = cx + lr * Math.cos(angle);
+      const y = cy + lr * Math.sin(angle);
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.strokeStyle = '#e0e0e0';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  // 绘制轴线
+  for (let i = 0; i < count; i++) {
+    const angle = (Math.PI * 2 * i) / count - Math.PI / 2;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + r * Math.cos(angle), cy + r * Math.sin(angle));
+    ctx.strokeStyle = '#e0e0e0';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  // 绘制数据区域
+  ctx.beginPath();
+  for (let i = 0; i < count; i++) {
+    const angle = (Math.PI * 2 * i) / count - Math.PI / 2;
+    const lr = r * (scores[i] / 100);
+    const x = cx + lr * Math.cos(angle);
+    const y = cy + lr * Math.sin(angle);
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  }
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(74, 144, 217, 0.2)';
+  ctx.fill();
+  ctx.strokeStyle = '#4a90d9';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // 绘制数据点
+  for (let i = 0; i < count; i++) {
+    const angle = (Math.PI * 2 * i) / count - Math.PI / 2;
+    const lr = r * (scores[i] / 100);
+    const x = cx + lr * Math.cos(angle);
+    const y = cy + lr * Math.sin(angle);
+    ctx.beginPath();
+    ctx.arc(x, y, 5, 0, Math.PI * 2);
+    ctx.fillStyle = '#4a90d9';
+    ctx.fill();
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }
+
+  // 绘制标签
+  ctx.fillStyle = '#666';
+  ctx.font = '13px -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif';
+  ctx.textAlign = 'center';
+  for (let i = 0; i < count; i++) {
+    const angle = (Math.PI * 2 * i) / count - Math.PI / 2;
+    const lr = r + 24;
+    const x = cx + lr * Math.cos(angle);
+    const y = cy + lr * Math.sin(angle) + 5;
+    ctx.fillText(labels[i], x, y);
+  }
+}
+
+// ========== 环形进度条 ==========
+
+function renderRingProgress(score) {
+  const svg = document.getElementById('ring-progress');
+  if (!svg) return;
+
+  const size = 160, strokeWidth = 12, r = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * r;
+  const offset = circumference - (score / 100) * circumference;
+  const color = getScoreColor(score);
+
+  svg.innerHTML = `
+    <circle cx="${size/2}" cy="${size/2}" r="${r}"
+      fill="none" stroke="#eee" stroke-width="${strokeWidth}"/>
+    <circle cx="${size/2}" cy="${size/2}" r="${r}"
+      fill="none" stroke="${color}" stroke-width="${strokeWidth}"
+      stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"
+      stroke-linecap="round" transform="rotate(-90 ${size/2} ${size/2})"
+      style="transition: stroke-dashoffset 1.2s ease-out;"/>
+  `;
+}
+
+// ========== 每日运势 ==========
+
+function initFortuneTab() {
+  // 预加载运势（切换时再渲染）
+}
+
+function renderFortune() {
+  const profile = getProfile();
+  const fortune = getDailyFortune(profile);
+  const container = document.getElementById('panel-fortune');
+  if (!container) return;
+
+  let html = '';
+
+  // 每日一签（始终显示）
+  const card = fortune.dailyCard;
+  const levelColors = {
+    '大吉': '#c9a96e', '吉': '#5cb85c', '中吉': '#4a90d9',
+    '小吉': '#f0ad4e', '平': '#888', '末吉': '#d9534f'
+  };
+  html += `
+    <div class="fortune-card daily-card">
+      <div class="card-badge" style="background:${levelColors[card.level] || '#888'}">${card.level}</div>
+      <h3>📜 每日一签</h3>
+      <div class="poem">${card.poem}</div>
+      <div class="explain">${card.explain}</div>
+    </div>
+  `;
+
+  // 个性化运势（需 profile）
+  if (fortune.personalized) {
+    const p = fortune.personalized;
+    html += `
+      <div class="fortune-card personal-card">
+        <h3>🔮 今日运势 <span style="color:${p.fortuneColor}">${p.fortuneLevel}</span></h3>
+        <div class="fortune-score" style="color:${p.fortuneColor}">${p.fortuneScore}</div>
+        <p class="fortune-desc">${p.fortuneDesc}</p>
+        <div class="fortune-meta">
+          <span>${p.zodiacEmoji} ${p.zodiacName}</span>
+          <span>🀄 ${p.stemBranch}</span>
+        </div>
+
+        <div class="yi-ji">
+          <div class="yi">
+            <h4>✅ 今日宜</h4>
+            <ul>${p.yi.map(item => `<li>${item}</li>`).join('')}</ul>
+          </div>
+          <div class="ji">
+            <h4>❌ 今日忌</h4>
+            <ul>${p.ji.map(item => `<li>${item}</li>`).join('')}</ul>
+          </div>
+        </div>
+
+        <div class="lucky-items">
+          <div class="lucky-item">
+            <span class="lucky-dot" style="background:${p.luckyColor}"></span>
+            <span>幸运色：${p.luckyColorName}</span>
+          </div>
+          <div class="lucky-item">
+            <span>🔢 幸运数字：${p.luckyNumber}</span>
+          </div>
+          <div class="lucky-item">
+            <span>🧭 幸运方向：${p.luckyDirection}</span>
+          </div>
+        </div>
+      </div>
+    `;
+  } else {
+    html += `
+      <div class="fortune-card personal-card empty-fortune">
+        <h3>🔮 个性化运势</h3>
+        <p class="empty-hint">
+          还没有你的个人信息，先去
+          <a href="#home" onclick="switchTab('home');window.location.hash='home';return false;">预测首页</a>
+          填写信息吧～填写后每日运势将根据你的星座和天干地支定制。
+        </p>
+      </div>
+    `;
+  }
+
+  container.innerHTML = html;
+}
+
+// ========== 历史记录 ==========
+
+function initHistoryTab() {
+  // 预绑定事件
+}
+
+function renderHistory() {
+  const history = getHistory();
+  const container = document.getElementById('panel-history');
+  if (!container) return;
+
+  if (history.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">📋</div>
+        <p>暂无预测记录</p>
+        <p class="empty-hint">完成一次预测后，记录将显示在这里</p>
+      </div>
+    `;
+    return;
+  }
+
+  let html = `
+    <div class="history-actions">
+      <span class="history-count">共 ${history.length} 条记录</span>
+      <button class="btn btn-small btn-danger" onclick="handleClearHistory()">清空全部</button>
+    </div>
+    <div class="history-list">
+  `;
+
+  history.forEach(item => {
+    const dateStr = new Date(item.timestamp).toLocaleString('zh-CN');
+    const detailId = 'hist-detail-' + item.id;
+
+    html += `
+      <div class="history-item" onclick="toggleHistoryDetail('${item.id}')">
+        <div class="history-item-header">
+          <div class="history-score" style="color:${item.grade.color}">${item.total}</div>
+          <div class="history-info">
+            <div class="history-grade" style="color:${item.grade.color}">${item.grade.grade} · ${item.grade.label}</div>
+            <div class="history-date">${dateStr}</div>
+          </div>
+          <button class="btn btn-small btn-text" onclick="event.stopPropagation();handleDeleteHistory('${item.id}')">删除</button>
+        </div>
+        <div class="history-detail" id="${detailId}" style="display:none;">
+          <div class="mini-dims">
+            <div class="mini-dim"><span>🏫 大学</span><span style="color:${getScoreColor(item.university.score)}">${item.university.score}</span></div>
+            <div class="mini-dim"><span>💼 专业</span><span style="color:${getScoreColor(item.major.score)}">${item.major.score}</span></div>
+            <div class="mini-dim"><span>🀄 天干地支</span><span style="color:${getScoreColor(item.stemBranch.score)}">${item.stemBranch.score}</span></div>
+            <div class="mini-dim"><span>♈ 星座</span><span style="color:${getScoreColor(item.zodiac.score)}">${item.zodiac.score}</span></div>
+            <div class="mini-dim"><span>🧠 MBTI</span><span style="color:${getScoreColor(item.mbti.score)}">${item.mbti.score}</span></div>
+          </div>
+          <div class="mini-advice">
+            <strong>综合建议：</strong>
+            <ul>${item.advice.slice(0, 3).map(a => `<li>${a}</li>`).join('')}</ul>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+function toggleHistoryDetail(id) {
+  const el = document.getElementById('hist-detail-' + id);
+  if (el) {
+    el.style.display = el.style.display === 'none' ? 'block' : 'none';
+  }
+}
+
+function handleDeleteHistory(id) {
+  if (confirm('确定要删除这条预测记录吗？')) {
+    deleteHistory(id);
+    renderHistory();
+    showToast('已删除', 'info');
+  }
+}
+
+function handleClearHistory() {
+  if (confirm('确定要清空所有预测记录吗？此操作不可恢复。')) {
+    clearHistory();
+    renderHistory();
+    showToast('历史记录已清空', 'info');
+  }
+}
+
+// ========== 工具函数 ==========
+
+function showToast(message, type) {
+  // 移除已有 toast
+  const existing = document.querySelector('.toast');
+  if (existing) existing.remove();
+
+  const toast = document.createElement('div');
+  toast.className = 'toast toast-' + (type || 'info');
+  toast.textContent = message;
+  document.body.appendChild(toast);
+
+  // 显示动画
+  requestAnimationFrame(() => {
+    toast.classList.add('show');
+  });
+
+  // 3秒后移除
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
