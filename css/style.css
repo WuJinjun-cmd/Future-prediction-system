@@ -26,6 +26,7 @@
   --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
 
   --font-stack: "SimSun", "STSong", "宋体", "Noto Serif CJK SC", serif;
+  --font-heading: "SimHei", "STHeiti", "黑体", "Noto Sans CJK SC", sans-serif;
   --max-width: 800px;
   --nav-height: 56px;
 }
@@ -132,6 +133,21 @@ ul {
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* ========== 全局标题 ========== */
+h1, h2, h3, h4, h5, h6,
+.card-header h2, .card-header h3,
+.nav-tab,
+.result-grade,
+.fortune-card h3,
+.daily-card h3,
+.personal-card h3,
+.form-group label,
+.dim-name,
+.history-grade {
+  font-family: var(--font-heading);
+  font-weight: bold;
+}
+
 /* ========== 卡片 ========== */
 .card {
   background: var(--color-surface);
@@ -148,7 +164,6 @@ ul {
 
 .card-header h2 {
   font-size: 20px;
-  font-weight: 600;
   color: var(--color-text);
 }
 
