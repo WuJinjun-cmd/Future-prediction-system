@@ -161,9 +161,16 @@ function renderResult(result) {
   renderDimensionDetail('dim-zodiac', result.zodiac, '星座');
   renderDimensionDetail('dim-mbti', result.mbti, 'MBTI');
 
-  // 建议
+  // 建议（分组结构）
   const adviceList = document.getElementById('result-advice');
-  adviceList.innerHTML = result.advice.map(a => `<li>${a}</li>`).join('');
+  adviceList.innerHTML = result.advice.map(group => `
+    <li class="advice-group">
+      <div class="advice-group-title">${group.icon} ${group.title}</div>
+      <ul class="advice-sub-list">
+        ${group.items.map(item => `<li>${item}</li>`).join('')}
+      </ul>
+    </li>
+  `).join('');
 
   // 今日运势（基于五行+星座）
   renderResultFortune(result);
@@ -565,7 +572,10 @@ function renderHistory() {
           </div>
           <div class="mini-advice">
             <strong>综合建议：</strong>
-            <ul>${item.advice.slice(0, 3).map(a => `<li>${a}</li>`).join('')}</ul>
+            ${Array.isArray(item.advice) && item.advice.length > 0 && item.advice[0].title
+              ? item.advice.map(g => `<div class="mini-group"><em>${g.icon} ${g.title}</em>: ${g.items.slice(0, 2).join('；')}</div>`).join('')
+              : ''
+            }
           </div>
         </div>
       </div>

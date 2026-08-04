@@ -203,63 +203,81 @@ function getGrade(score) {
 }
 
 /**
- * 生成综合建议
+ * 生成综合建议（三大类，每类含子条目）
  */
 function generateAdvice({ university, major, stemBranch, zodiac, mbti, total }) {
-  const advices = [];
+  const groups = [];
 
-  // 大学建议
+  // ===== 第一大类：学业与专业 =====
+  const academicItems = [];
+
   if (university.score >= 85) {
-    advices.push('🏫 你的学校背景非常优秀，这是重要的起点优势，善用名校资源和人脉网络。');
+    academicItems.push('学校背景优秀，善用名校资源和人脉网络，这是重要的起点优势。');
   } else if (university.score >= 65) {
-    advices.push('🏫 学校平台有一定竞争力，可以通过考研深造或证书加持来进一步提升背景。');
+    academicItems.push('学校平台有一定竞争力，可通过考研深造或证书加持来进一步提升背景。');
   } else {
-    advices.push('🏫 学校背景虽非顶尖，但实际能力和经验同样重要，专注打造自己的核心竞争力。');
+    academicItems.push('学校背景虽非顶尖，但实际能力和经验同样重要，专注打造核心竞争力。');
   }
 
-  // 专业建议
   if (major.score >= 85) {
-    advices.push('💼 你的专业正处于黄金赛道，市场需求旺盛，深耕技术能力将获得丰厚回报。');
+    academicItems.push(`${major.name}正处于黄金赛道，市场需求旺盛，深耕技术能力将获得丰厚回报。`);
   } else if (major.score >= 70) {
-    advices.push('💼 专业前景稳定，建议关注行业前沿动态，适时补充新兴技能提升竞争力。');
+    academicItems.push(`${major.name}前景稳定，关注行业前沿动态，适时补充新兴技能提升竞争力。`);
   } else {
-    advices.push('💼 专业市场需求一般，可以考虑辅修热门技能或向交叉领域发展，拓宽就业面。');
+    academicItems.push(`${major.name}市场需求一般，可考虑辅修热门技能或向交叉领域发展。`);
   }
 
-  // 五行命理建议
-  if (stemBranch.wuxingAdvice) {
-    stemBranch.wuxingAdvice.forEach(a => advices.push('🌟 ' + a));
-  }
-  // 四柱信息
+  groups.push({ icon: '🏫', title: '学业与专业', items: academicItems });
+
+  // ===== 第二大类：命理与性格 =====
+  const destinyItems = [];
+
   const p = stemBranch;
+  // 四柱八字
   if (p.yearPillar && p.dayPillar) {
-    advices.push(`🀄 八字四柱：${p.yearPillar.stemBranch}年 ${p.monthPillar.stemBranch}月 ${p.dayPillar.stemBranch}日${p.hourPillar ? ' ' + p.hourPillar.stemBranch + '时' : ''}。日主「${p.dayMaster.emoji}${p.dayMaster.element}」${p.dayMaster.trait}。`);
+    destinyItems.push(`八字：${p.yearPillar.stemBranch}年 ${p.monthPillar.stemBranch}月 ${p.dayPillar.stemBranch}日${p.hourPillar ? ' ' + p.hourPillar.stemBranch + '时' : ''}`);
   }
-  // 五行强弱
+  // 日主
+  destinyItems.push(`日主「${p.dayMaster.emoji}${p.dayMaster.element}」— ${p.dayMaster.trait}${p.deLing ? '，得月令之气根基深厚' : '，不得月令宜借力发展'}`);
+  // 五行分布
   if (p.strongest && p.weakest) {
-    advices.push(`☯️ 五行分布：最强「${p.strongest.emoji}${p.strongest.element}」(${p.wuxingCount[p.strongest.element]})，最弱「${p.weakest.emoji}${p.weakest.element}」(${p.wuxingCount[p.weakest.element]})。${p.deLing ? '日主得令，根基深厚。' : '日主失令，宜借力发展。'}`);
+    destinyItems.push(`五行：最强${p.strongest.emoji}${p.strongest.element}(${p.wuxingCount[p.strongest.element]})，最弱${p.weakest.emoji}${p.weakest.element}(${p.wuxingCount[p.weakest.element]})，平衡度${p.balance}`);
   }
-
-  // 星座建议
+  // 五行建议核心句
+  if (p.wuxingAdvice && p.wuxingAdvice.length > 0) {
+    destinyItems.push(p.wuxingAdvice[0].replace(/^[^·]+·/, '')); // 取第一条建议的核心内容
+  }
+  // 星座
   if (zodiac.advice) {
-    advices.push(`♈ 星座视角：${zodiac.advice}。`);
+    destinyItems.push(`${zodiac.emoji}${zodiac.name}（${zodiac.element}象）：${zodiac.advice}`);
   }
-
-  // MBTI建议
+  // MBTI
   if (mbti.advice) {
-    advices.push(`🧠 MBTI视角：${mbti.advice}`);
+    destinyItems.push(`🧠 ${mbti.type}（${mbti.name}）：${mbti.advice}`);
   }
 
-  // 综合建议
+  groups.push({ icon: '🌟', title: '命理与性格', items: destinyItems });
+
+  // ===== 第三大类：综合展望 =====
+  const outlookItems = [];
+
   if (total >= 85) {
-    advices.push('🎯 综合来看，你拥有非常优秀的组合条件。大胆追求高远的目标，你对得起自己的天赋。');
+    outlookItems.push('综合条件非常优秀，大胆追求高远目标，你对得起自己的天赋。');
   } else if (total >= 70) {
-    advices.push('🎯 你有着不错的基础条件，关键在于找到最适合自己的那条路，然后持续深耕。');
+    outlookItems.push('基础条件不错，关键在于找到最适合自己的路，持续深耕。');
   } else {
-    advices.push('🎯 人生是一场马拉松而非短跑。当前的评分只是一个参考，真正决定未来的，是你从今天开始的每一个选择和行动。');
+    outlookItems.push('人生是马拉松而非短跑，从今天开始的每个选择和行动才真正决定未来。');
   }
 
-  return advices;
+  // 日主行业方向
+  const dmEl = p.dayMaster.element;
+  if (dmEl && WUXING_TRAITS[dmEl]) {
+    outlookItems.push(`五行视角推荐方向：${WUXING_TRAITS[dmEl].career}`);
+  }
+
+  groups.push({ icon: '🎯', title: '综合展望', items: outlookItems });
+
+  return groups;
 }
 
 /**
