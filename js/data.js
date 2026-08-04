@@ -738,3 +738,319 @@ const FORTUNE_JI = [
 const LUCKY_COLORS = ['#4a90d9', '#c9a96e', '#5cb85c', '#f0ad4e', '#d9534f', '#8e44ad', '#1abc9c', '#e74c3c', '#3498db', '#2ecc71'];
 const LUCKY_COLORS_NAMES = ['天空蓝', '香槟金', '翠绿', '暖橙', '中国红', '优雅紫', '青碧', '朱砂红', '深海蓝', '翡翠绿'];
 const LUCKY_DIRECTIONS = ['东方', '东南方', '南方', '西南方', '西方', '西北方', '北方', '东北方'];
+
+// ========== 六十四卦数据 ==========
+// 上卦(外卦) + 下卦(内卦) = 重卦
+// 八卦：乾☰ 兑☱ 离☲ 震☳ 巽☴ 坎☵ 艮☶ 坤☷
+const BAGUA = {
+  '乾': { symbol: '☰', element: '金', nature: '天', direction: '西北' },
+  '兑': { symbol: '☱', element: '金', nature: '泽', direction: '西' },
+  '离': { symbol: '☲', element: '火', nature: '火', direction: '南' },
+  '震': { symbol: '☳', element: '木', nature: '雷', direction: '东' },
+  '巽': { symbol: '☴', element: '木', nature: '风', direction: '东南' },
+  '坎': { symbol: '☵', element: '水', nature: '水', direction: '北' },
+  '艮': { symbol: '☶', element: '土', nature: '山', direction: '东北' },
+  '坤': { symbol: '☷', element: '土', nature: '地', direction: '西南' }
+};
+
+// 六十四卦完整数据
+const HEXAGRAMS = [
+  { id: 1, num: '01', name: '乾为天', upper: '乾', lower: '乾', symbol: '☰☰', element: '金',
+    judgment: '元亨利贞', interpretation: '大吉之卦。乾卦象征天，刚健中正，纯粹精也。事业大有可为，宜积极进取。',
+    career: '飞龙在天，利见大人。事业巅峰期，适合大胆开拓。', love: '二气感应，和谐美满。', health: '身强体健，注意劳逸结合。' },
+  { id: 2, num: '02', name: '坤为地', upper: '坤', lower: '坤', symbol: '☷☷', element: '土',
+    judgment: '元亨，利牝马之贞', interpretation: '大吉之卦。坤卦象征地，柔顺承天，厚德载物。宜顺势而为，以柔克刚。',
+    career: '厚德载物，包容万象。宜稳扎稳打。', love: '柔顺利贞，感情稳固。', health: '脾胃为主，注意调理。' },
+  { id: 3, num: '03', name: '水雷屯', upper: '坎', lower: '震', symbol: '☵☳', element: '水',
+    judgment: '元亨利贞，勿用有攸往', interpretation: '始生之难。万物初生，艰难重重。宜守不宜攻，静待时机。',
+    career: '创业维艰，坚守初心。', love: '初始波折，终得圆满。', health: '注意肾脏调养。' },
+  { id: 4, num: '04', name: '山水蒙', upper: '艮', lower: '坎', symbol: '☶☵', element: '土',
+    judgment: '亨。匪我求童蒙，童蒙求我', interpretation: '启蒙之卦。如孩童蒙昧待启，宜虚心求学，不可好高骛远。',
+    career: '求学深造的好时机。', love: '慢慢了解，不宜草率。', health: '保持好奇心有益身心。' },
+  { id: 5, num: '05', name: '水天需', upper: '坎', lower: '乾', symbol: '☵☰', element: '水',
+    judgment: '有孚，光亨，贞吉', interpretation: '等待之卦。时机未到，需耐心等待。诚信守正，终获吉祥。',
+    career: '蓄力待发，不可急躁。', love: '耐心等待对的人。', health: '静养为宜。' },
+  { id: 6, num: '06', name: '天水讼', upper: '乾', lower: '坎', symbol: '☰☵', element: '金',
+    judgment: '有孚窒惕，中吉终凶', interpretation: '争讼之卦。宜化解矛盾，避免冲突升级。退一步海阔天空。',
+    career: '避免卷入职场纷争。', love: '宽容理解化解矛盾。', health: '心平气和为养生之本。' },
+  { id: 7, num: '07', name: '地水师', upper: '坤', lower: '坎', symbol: '☷☵', element: '土',
+    judgment: '贞，丈人吉，无咎', interpretation: '师出有名。宜以正道教化，师出有名则吉。当以仁德服众。',
+    career: '团队合作，领导有力。', love: '以德服人，赢得尊重。', health: '规律作息。' },
+  { id: 8, num: '08', name: '水地比', upper: '坎', lower: '坤', symbol: '☵☷', element: '水',
+    judgment: '吉。原筮，元永贞', interpretation: '亲比之卦。人与人互相依靠，团结和谐。贵人相助，万事顺遂。',
+    career: '团队融洽，合作共赢。', love: '亲密无间，感情升温。', health: '社交有益身心。' },
+  { id: 9, num: '09', name: '风天小畜', upper: '巽', lower: '乾', symbol: '☴☰', element: '木',
+    judgment: '亨。密云不雨，自我西郊', interpretation: '小有积蓄。力量尚不足，需继续积累。云已密布，雨将降未降。',
+    career: '积蓄力量，耐心等待。', love: '感情渐入佳境。', health: '调养为主，勿过劳。' },
+  { id: 10, num: '10', name: '天泽履', upper: '乾', lower: '兑', symbol: '☰☱', element: '金',
+    judgment: '履虎尾，不咥人，亨', interpretation: '如履薄冰。身处险境但可化险为夷。谨慎行事，依礼而为。',
+    career: '谨慎行事，遵循规则。', love: '以礼相待，循序渐进。', health: '注意安全，防患未然。' },
+  { id: 11, num: '11', name: '地天泰', upper: '坤', lower: '乾', symbol: '☷☰', element: '土',
+    judgment: '小往大来，吉亨', interpretation: '大吉之卦。天地交泰，万物亨通。上下同心，否极泰来。',
+    career: '事业亨通，大有作为。', love: '两情相悦，和谐美满。', health: '身心畅达。' },
+  { id: 12, num: '12', name: '天地否', upper: '乾', lower: '坤', symbol: '☰☷', element: '金',
+    judgment: '否之匪人，不利君子贞', interpretation: '闭塞不通。天地不交，万物不通。小人道长，君子道消。宜韬光养晦。',
+    career: '逆境中坚守本心。', love: '沟通不畅，需要耐心。', health: '注意调养，防病未然。' },
+  { id: 13, num: '13', name: '天火同人', upper: '乾', lower: '离', symbol: '☰☲', element: '金',
+    judgment: '同人于野，亨。利涉大川', interpretation: '志同道合。与人同心协力，可成大事。广结善缘，得道多助。',
+    career: '团队协作，共创佳绩。', love: '志趣相投，关系升温。', health: '集体活动有益身心。' },
+  { id: 14, num: '14', name: '火天大有', upper: '离', lower: '乾', symbol: '☲☰', element: '火',
+    judgment: '元亨', interpretation: '大吉之卦。大有收获，丰盛圆满。顺天应人，无所不利。',
+    career: '丰收之时，把握机遇。', love: '感情丰盈美满。', health: '精力充沛。' },
+  { id: 15, num: '15', name: '地山谦', upper: '坤', lower: '艮', symbol: '☷☶', element: '土',
+    judgment: '亨，君子有终', interpretation: '谦虚受益。满招损，谦受益。保持谦逊态度，必得善终。',
+    career: '谦虚谨慎，广结善缘。', love: '低调真诚最动人。', health: '心态平和养生之道。' },
+  { id: 16, num: '16', name: '雷地豫', upper: '震', lower: '坤', symbol: '☳☷', element: '木',
+    judgment: '利建侯行师', interpretation: '和乐愉悦。顺势而动，事半功倍。但不可乐极生悲，宜有所节制。',
+    career: '顺时而动，事半功倍。', love: '感情顺利甜蜜。', health: '保持愉悦，但勿过度。' },
+  { id: 17, num: '17', name: '泽雷随', upper: '兑', lower: '震', symbol: '☱☳', element: '金',
+    judgment: '元亨利贞，无咎', interpretation: '随顺时势。随机应变，灵活处世。跟随时势而动，方得无咎。',
+    career: '灵活应变，顺势而为。', love: '随缘而行，不强求。', health: '作息有时，顺应自然。' },
+  { id: 18, num: '18', name: '山风蛊', upper: '艮', lower: '巽', symbol: '☶☴', element: '土',
+    judgment: '元亨，利涉大川', interpretation: '整治腐败。蛊者事也，有事而后可大。发现问题及时整治，则可亨通。',
+    career: '整顿革新，继往开来。', love: '解决问题增进感情。', health: '及时体检，防微杜渐。' },
+  { id: 19, num: '19', name: '地泽临', upper: '坤', lower: '兑', symbol: '☷☱', element: '土',
+    judgment: '元亨利贞。至于八月有凶', interpretation: '居高临下。事物发展壮大，宜亲临指导。但盛极必衰，需居安思危。',
+    career: '事业壮大，亲力亲为。', love: '主动关心对方。', health: '注意季节变化。' },
+  { id: 20, num: '20', name: '风地观', upper: '巽', lower: '坤', symbol: '☴☷', element: '木',
+    judgment: '盥而不荐，有孚颙若', interpretation: '观察思考。宜静观其变，深思熟虑后再行动。',
+    career: '多观察少行动，等待时机。', love: '深入了解再做决定。', health: '静养观察身体变化。' },
+  { id: 21, num: '21', name: '火雷噬嗑', upper: '离', lower: '震', symbol: '☲☳', element: '火',
+    judgment: '亨。利用狱', interpretation: '咬合清除。清除障碍，明断是非。宜果断处理积压问题。',
+    career: '果断处理棘手问题。', love: '坦诚沟通解决隔阂。', health: '清除体内积毒。' },
+  { id: 22, num: '22', name: '山火贲', upper: '艮', lower: '离', symbol: '☶☲', element: '土',
+    judgment: '亨。小利有攸往', interpretation: '文饰之美。外在修饰固然重要，但不可舍本逐末。宜内外兼修。',
+    career: '提升外在形象和包装。', love: '浪漫装饰增进感情。', health: '外在保养+内在调理。' },
+  { id: 23, num: '23', name: '山地剥', upper: '艮', lower: '坤', symbol: '☶☷', element: '土',
+    judgment: '不利有攸往', interpretation: '剥落衰颓。阴盛阳衰，小人得势。宜顺应时势，厚下安宅。',
+    career: '以退为进，保存实力。', love: '给彼此空间和尊重。', health: '固本培元，养精蓄锐。' },
+  { id: 24, num: '24', name: '地雷复', upper: '坤', lower: '震', symbol: '☷☳', element: '土',
+    judgment: '亨。出入无疾，朋来无咎', interpretation: '一阳来复。冬尽春来，万象更新。宜把握转机，复兴再起。',
+    career: '东山再起，重振旗鼓。', love: '旧情复燃或重新开始。', health: '恢复期，循序渐进。' },
+  { id: 25, num: '25', name: '天雷无妄', upper: '乾', lower: '震', symbol: '☰☳', element: '金',
+    judgment: '元亨利贞。其匪正有眚', interpretation: '真实无妄。宜守正道，不可妄为。心存诚敬，天自佑之。',
+    career: '脚踏实地，不投机取巧。', love: '真诚相待最重要。', health: '顺其自然，不妄作劳。' },
+  { id: 26, num: '26', name: '山天大畜', upper: '艮', lower: '乾', symbol: '☶☰', element: '土',
+    judgment: '利贞，不家食吉', interpretation: '大有积蓄。厚积薄发，蓄势待发。宜积累德才，大展宏图。',
+    career: '厚积薄发，蓄力待时。', love: '感情日渐深厚。', health: '积蓄能量，养生为要。' },
+  { id: 27, num: '27', name: '山雷颐', upper: '艮', lower: '震', symbol: '☶☳', element: '土',
+    judgment: '贞吉。观颐，自求口实', interpretation: '颐养之道。养生养德，自食其力。言语谨慎，饮食有节。',
+    career: '自力更生，养精蓄锐。', love: '细水长流的感情。', health: '注意饮食养生。' },
+  { id: 28, num: '28', name: '泽风大过', upper: '兑', lower: '巽', symbol: '☱☴', element: '金',
+    judgment: '栋桡，利有攸往，亨', interpretation: '过度负荷。太过则折，宜适度调整。非常之时当有非常之举。',
+    career: '压力过大，适当减负。', love: '不要给对方太大压力。', health: '身心负荷过重，需减压。' },
+  { id: 29, num: '29', name: '坎为水', upper: '坎', lower: '坎', symbol: '☵☵', element: '水',
+    judgment: '习坎，有孚，维心亨', interpretation: '重重险阻。身处困境，宜守信用、持诚信，终能化险为夷。',
+    career: '逆境中保持诚信。', love: '经历考验感情更坚。', health: '注意肾脏和泌尿系统。' },
+  { id: 30, num: '30', name: '离为火', upper: '离', lower: '离', symbol: '☲☲', element: '火',
+    judgment: '利贞，亨。畜牝牛吉', interpretation: '光明依附。如火焰般光明灿烂，但需有所依附。宜柔顺中正。',
+    career: '找到好的平台依附发展。', love: '温柔体贴维系感情。', health: '注意心脏和眼睛。' },
+  { id: 31, num: '31', name: '泽山咸', upper: '兑', lower: '艮', symbol: '☱☶', element: '金',
+    judgment: '亨利贞，取女吉', interpretation: '感应之道。男女感应，万物化生。虚心接纳，和谐共鸣。',
+    career: '敏锐感知市场变化。', love: '心心相印，感情和美。', health: '身心感应，调和阴阳。' },
+  { id: 32, num: '32', name: '雷风恒', upper: '震', lower: '巽', symbol: '☳☴', element: '木',
+    judgment: '亨，无咎，利贞', interpretation: '恒久之道。日月得天而能久照。持之以恒，方得始终。',
+    career: '坚持就是胜利。', love: '长久的感情需要经营。', health: '长期坚持养生习惯。' },
+  { id: 33, num: '33', name: '天山遁', upper: '乾', lower: '艮', symbol: '☰☶', element: '金',
+    judgment: '亨，小利贞', interpretation: '退避隐忍。君子以远小人。适时退让，以退为进。',
+    career: '暂时退让以避锋芒。', love: '给彼此一些空间。', health: '远离不良环境。' },
+  { id: 34, num: '34', name: '雷天大壮', upper: '震', lower: '乾', symbol: '☳☰', element: '木',
+    judgment: '利贞', interpretation: '强盛壮大。阳气盛长，但不可恃强凌弱。宜以正自守。',
+    career: '事业壮大，蒸蒸日上。', love: '热情主动追求。', health: '精力旺盛，适当运动。' },
+  { id: 35, num: '35', name: '火地晋', upper: '离', lower: '坤', symbol: '☲☷', element: '火',
+    judgment: '康侯用锡马蕃庶，昼日三接', interpretation: '光明上进。如日之升，前途光明。宜积极进取，步步高升。',
+    career: '晋升顺利，前程似锦。', love: '感情日渐升温。', health: '状态上升，精力充沛。' },
+  { id: 36, num: '36', name: '地火明夷', upper: '坤', lower: '离', symbol: '☷☲', element: '土',
+    judgment: '利艰贞', interpretation: '光明受损。日入地中，昏暗中宜坚守正道。忍耐过后必有光明。',
+    career: '韬光养晦，等待时机。', love: '感情低谷需要坚持。', health: '注意休养，减少消耗。' },
+  { id: 37, num: '37', name: '风火家人', upper: '巽', lower: '离', symbol: '☴☲', element: '木',
+    judgment: '利女贞', interpretation: '家庭和谐。言有物而行有恒。宜治家有道，和睦相处。',
+    career: '内部管理井井有条。', love: '家庭和睦，感情稳定。', health: '家庭支持有益健康。' },
+  { id: 38, num: '38', name: '火泽睽', upper: '离', lower: '兑', symbol: '☲☱', element: '火',
+    judgment: '小事吉', interpretation: '乖离不合。小事可成，大事需和。存异求同，互相理解。',
+    career: '求同存异，灵活应对。', love: '小摩擦需要沟通化解。', health: '身心调和为要。' },
+  { id: 39, num: '39', name: '水山蹇', upper: '坎', lower: '艮', symbol: '☵☶', element: '水',
+    judgment: '利西南，不利东北', interpretation: '艰难险阻。宜选择正确的方向，不宜冒险前行。',
+    career: '选择正确的方向很重要。', love: '感情路上有波折。', health: '注意关节和骨骼。' },
+  { id: 40, num: '40', name: '雷水解', upper: '震', lower: '坎', symbol: '☳☵', element: '木',
+    judgment: '利西南，无所往，其来复吉', interpretation: '困难解除。久旱逢甘霖，问题迎刃而解。宜宽恕和解。',
+    career: '困难化解，柳暗花明。', love: '误会解除，和好如初。', health: '疾病将愈，坚持治疗。' },
+  { id: 41, num: '41', name: '山泽损', upper: '艮', lower: '兑', symbol: '☶☱', element: '土',
+    judgment: '有孚，元吉，无咎', interpretation: '损下益上。减法生活，去繁就简。损己利人，反得增益。',
+    career: '适当舍弃才能获得更多。', love: '为爱付出是值得的。', health: '减负养生，戒除陋习。' },
+  { id: 42, num: '42', name: '风雷益', upper: '巽', lower: '震', symbol: '☴☳', element: '木',
+    judgment: '利有攸往，利涉大川', interpretation: '大吉之卦。增益无穷，见善则迁。宜抓住机遇，大展宏图。',
+    career: '抓住机遇，大展宏图。', love: '感情增益，甜蜜美满。', health: '身心增益，状态良好。' },
+  { id: 43, num: '43', name: '泽天夬', upper: '兑', lower: '乾', symbol: '☱☰', element: '金',
+    judgment: '扬于王庭，孚号有厉', interpretation: '决断果断。宜当机立断，不可犹疑不决。快刀斩乱麻。',
+    career: '果断决策，当断则断。', love: '该表白时就表白。', health: '果断改变不良习惯。' },
+  { id: 44, num: '44', name: '天风姤', upper: '乾', lower: '巽', symbol: '☰☴', element: '金',
+    judgment: '女壮，勿用取女', interpretation: '不期而遇。宜谨慎对待突如其来的机遇，察其真伪。',
+    career: '机遇与风险并存。', love: '邂逅需谨慎对待。', health: '突发状况及时应对。' },
+  { id: 45, num: '45', name: '泽地萃', upper: '兑', lower: '坤', symbol: '☱☷', element: '金',
+    judgment: '亨。王假有庙', interpretation: '聚集荟萃。人才汇集，精英云集。宜聚众力以成大事。',
+    career: '人才聚集，团队强大。', love: '聚会认识新朋友。', health: '集体活动有益身心。' },
+  { id: 46, num: '46', name: '地风升', upper: '坤', lower: '巽', symbol: '☷☴', element: '土',
+    judgment: '元亨，用见大人', interpretation: '步步高升。积小以高大，循序渐进。宜稳步上升，勿急勿躁。',
+    career: '步步高升，稳步前进。', love: '感情稳步升温。', health: '健康状态逐渐改善。' },
+  { id: 47, num: '47', name: '泽水困', upper: '兑', lower: '坎', symbol: '☱☵', element: '金',
+    judgment: '亨，贞，大人吉', interpretation: '困窘之时。身陷困境，但守正可以亨通。宜坚守信念。',
+    career: '困境中坚持就是胜利。', love: '感情遇到困难要坚守。', health: '身体不适，需耐心调养。' },
+  { id: 48, num: '48', name: '水风井', upper: '坎', lower: '巽', symbol: '☵☴', element: '水',
+    judgment: '改邑不改井，无丧无得', interpretation: '井养不穷。宜修身养性，惠及他人。养人亦自养。',
+    career: '深耕专业，利己利人。', love: '细水长流的付出。', health: '养生之道贵在坚持。' },
+  { id: 49, num: '49', name: '泽火革', upper: '兑', lower: '离', symbol: '☱☲', element: '金',
+    judgment: '己日乃孚，元亨利贞', interpretation: '变革革新。宜顺应时势进行变革，但须时机成熟。',
+    career: '改革创新的好时机。', love: '关系进入新阶段。', health: '改变不良生活方式。' },
+  { id: 50, num: '50', name: '火风鼎', upper: '离', lower: '巽', symbol: '☲☴', element: '火',
+    judgment: '元吉，亨', interpretation: '大吉之卦。鼎新革故，建功立业。宜树立权威，成就大业。',
+    career: '建功立业，树立权威。', love: '感情稳固如鼎。', health: '身体如鼎之稳固。' },
+  { id: 51, num: '51', name: '震为雷', upper: '震', lower: '震', symbol: '☳☳', element: '木',
+    judgment: '亨。震来虩虩，笑言哑哑', interpretation: '震惊百里。临危不乱，处变不惊。宜以敬畏之心应对变故。',
+    career: '处变不惊，临危不乱。', love: '经历了风波感情更坚。', health: '突受惊吓后需静养。' },
+  { id: 52, num: '52', name: '艮为山', upper: '艮', lower: '艮', symbol: '☶☶', element: '土',
+    judgment: '艮其背，不获其身', interpretation: '止于当止。宜适可而止，知止不殆。安守本分是最佳选择。',
+    career: '适可而止，知止不殆。', love: '感情需要适当克制。', health: '静养为主，勿过度。' },
+  { id: 53, num: '53', name: '风山渐', upper: '巽', lower: '艮', symbol: '☴☶', element: '木',
+    judgment: '女归吉，利贞', interpretation: '循序渐进。宜按部就班，不可急于求成。一切皆有过程。',
+    career: '按部就班，水到渠成。', love: '感情需要慢慢培养。', health: '康复需要过程。' },
+  { id: 54, num: '54', name: '雷泽归妹', upper: '震', lower: '兑', symbol: '☳☱', element: '木',
+    judgment: '征凶，无攸利', interpretation: '少女归嫁。宜摆正自己的位置，不可越位行事。',
+    career: '摆正位置，不宜冒进。', love: '认真对待感情关系。', health: '注意内分泌平衡。' },
+  { id: 55, num: '55', name: '雷火丰', upper: '震', lower: '离', symbol: '☳☲', element: '木',
+    judgment: '亨，王假之，勿忧', interpretation: '丰盛之极。如日中天，但盛极必衰。宜居安思危。',
+    career: '事业鼎盛，居安思危。', love: '感情热烈如火。', health: '精力旺盛但需节制。' },
+  { id: 56, num: '56', name: '火山旅', upper: '离', lower: '艮', symbol: '☲☶', element: '火',
+    judgment: '小亨，旅贞吉', interpretation: '旅居在外。客居他乡，宜谨慎行事。人生如逆旅，保持谦逊。',
+    career: '外出发展有利有弊。', love: '异地的感情需要维系。', health: '旅途注意安全和健康。' },
+  { id: 57, num: '57', name: '巽为风', upper: '巽', lower: '巽', symbol: '☴☴', element: '木',
+    judgment: '小亨，利有攸往', interpretation: '柔顺谦逊。如风吹草低，以柔克刚。宜顺势而为，勿强行对抗。',
+    career: '顺势而为，柔和处事。', love: '温柔体贴最动人。', health: '柔和运动如太极瑜伽。' },
+  { id: 58, num: '58', name: '兑为泽', upper: '兑', lower: '兑', symbol: '☱☱', element: '金',
+    judgment: '亨利贞', interpretation: '和悦喜悦。宜以和为贵，广交朋友。愉悦的心情是最好的风水。',
+    career: '人际关系良好有助事业。', love: '甜蜜喜悦的感情。', health: '心情愉悦有益健康。' },
+  { id: 59, num: '59', name: '风水涣', upper: '巽', lower: '坎', symbol: '☴☵', element: '木',
+    judgment: '亨。王假有庙', interpretation: '涣散分离。宜聚合人心，化解隔阂。水散而复聚，事在人为。',
+    career: '凝聚团队，化解分歧。', love: '化解矛盾，重修旧好。', health: '气机调畅，散郁为要。' },
+  { id: 60, num: '60', name: '水泽节', upper: '坎', lower: '兑', symbol: '☵☱', element: '水',
+    judgment: '亨。苦节不可贞', interpretation: '节制有度。凡事有度，过犹不及。宜张弛有节。',
+    career: '张弛有度，合理安排。', love: '给对方适当空间。', health: '节制饮食和欲望。' },
+  { id: 61, num: '61', name: '风泽中孚', upper: '巽', lower: '兑', symbol: '☴☱', element: '木',
+    judgment: '豚鱼吉，利涉大川', interpretation: '诚信之道。内心诚信，外显和悦。以至诚感人者，人亦以诚应之。',
+    career: '诚信为本，赢得信任。', love: '真诚相待最可靠。', health: '心神安宁，诚于中形于外。' },
+  { id: 62, num: '62', name: '雷山小过', upper: '震', lower: '艮', symbol: '☳☶', element: '木',
+    judgment: '亨利贞，可小事不可大事', interpretation: '小有过越。小事可为，大事需慎重。小步快跑，积小胜为大胜。',
+    career: '从小事做起，积少成多。', love: '小浪漫比大惊喜更重要。', health: '微调生活习惯即可。' },
+  { id: 63, num: '63', name: '水火既济', upper: '坎', lower: '离', symbol: '☵☲', element: '水',
+    judgment: '亨小，利贞。初吉终乱', interpretation: '事已成就。圆满之时更要居安思危。成功之后是新挑战的开始。',
+    career: '功成名就，居安思危。', love: '感情圆满但要继续经营。', health: '身体看似健康仍需保养。' },
+  { id: 64, num: '64', name: '火水未济', upper: '离', lower: '坎', symbol: '☲☵', element: '火',
+    judgment: '亨。小狐汔济，濡其尾', interpretation: '功业未成。虽未成功但已在路上。坚持到底，不可半途而废。',
+    career: '虽未成功但前景可期。', love: '感情还需时间发展。', health: '治疗在进行中，坚持下去。' }
+];
+
+/**
+ * 生成第N签（1-1000）
+ * 基于六十四卦 + 变爻生成1000种不同签文
+ */
+function generateStick(n) {
+  const hexIdx = (n - 1) % 64;
+  const variation = Math.floor((n - 1) / 64); // 0-15 变体
+  const hex = HEXAGRAMS[hexIdx];
+
+  // 基于卦的吉凶定基调
+  const auspiciousHexes = [1, 2, 11, 14, 15, 35, 42, 46, 50, 55, 58, 61]; // 十二个大吉卦
+  const neutralHexes = [3, 4, 5, 7, 8, 9, 10, 13, 16, 17, 19, 20, 22, 24, 25, 26, 27, 30, 31, 32, 37, 40, 41, 43, 44, 45, 48, 49, 53, 56, 57, 59, 60, 62, 63, 64];
+  const inauspiciousHexes = [6, 12, 18, 21, 23, 28, 29, 33, 34, 36, 38, 39, 47, 51, 52, 54];
+
+  let baseLevel, baseScore;
+  if (auspiciousHexes.includes(hex.id)) { baseLevel = '大吉'; baseScore = 85; }
+  else if (inauspiciousHexes.includes(hex.id)) { baseLevel = '凶'; baseScore = 35; }
+  else { baseLevel = '中平'; baseScore = 60; }
+
+  // 变体微调
+  const variationLevels = ['大吉', '吉', '中吉', '小吉', '平', '平', '末吉', '末吉', '小吉', '吉', '中吉', '平', '末吉', '吉', '中吉', '平'];
+  const level = variation < 2 ? baseLevel : variationLevels[variation % variationLevels.length];
+  const scoreAdjust = (variation % 5 - 2) * 5;
+  const fortuneScore = Math.min(100, Math.max(20, baseScore + scoreAdjust + Math.floor(seededRandomStick(n) * 10)));
+
+  // 变体诗
+  const poems = [
+    hex.name + '卦显象，' + hex.judgment + '。',
+    hex.symbol + ' 卦象昭然，' + hex.interpretation.slice(0, 30) + '。',
+    '得' + hex.name + '之象，' + hex.element + '气当令。',
+    hex.upper + '上' + hex.lower + '下，' + BAGUA[hex.upper].nature + BAGUA[hex.lower].nature + '相交。',
+  ];
+  const poemBase = poems[variation % poems.length];
+
+  // 针对生涯的解读
+  const careerInsights = [
+    hex.career,
+    '宜' + hex.element + '属性行业，' + hex.career,
+    '当前运势：' + hex.element + '气' + (level.includes('吉') ? '旺盛' : '不足') + '，' + hex.career,
+  ];
+
+  return {
+    number: n,
+    hexagram: hex,
+    variation: variation,
+    level: level,
+    fortuneScore: fortuneScore,
+    poem: poemBase + ' ' + careerInsights[variation % 3],
+    interpretation: hex.interpretation + (level.includes('吉') ? ' 此时正当顺势而为，宜积极进取。' : level === '凶' ? ' 此时宜韬光养晦，守正待时。' : ' 稳扎稳打，以守为攻。'),
+    career: hex.career,
+    love: hex.love,
+    health: hex.health,
+    element: hex.element,
+    baguaSymbol: hex.symbol
+  };
+}
+
+function seededRandomStick(seed) {
+  let s = seed;
+  s = Math.imul(s ^ (s >>> 16), 0x45d9f3b);
+  s = Math.imul(s ^ (s >>> 16), 0x45d9f3b);
+  s = s ^ (s >>> 16);
+  return (s >>> 0) / 0xFFFFFFFF;
+}
+
+/**
+ * 八卦占卜 — 生成卦象（基于日期种子或用户提问）
+ */
+function castHexagram(seed) {
+  // 模拟六爻起卦
+  const lines = [];
+  let s = seed || Date.now();
+  for (let i = 0; i < 6; i++) {
+    s = Math.imul(s ^ (s >>> 16), 0x45d9f3b);
+    s = Math.imul(s ^ (s >>> 16), 0x45d9f3b);
+    s = s ^ (s >>> 16);
+    const value = ((s >>> 0) % 4); // 0=老阴, 1=少阳, 2=少阴, 3=老阳
+    const isYang = value === 1 || value === 3;
+    const isChanging = value === 0 || value === 3;
+    lines.push({ position: i + 1, yang: isYang, changing: isChanging, value: value });
+  }
+
+  // 从下往上：下卦（初爻到三爻）+ 上卦（四爻到六爻）
+  const lowerYang = [lines[0].yang, lines[1].yang, lines[2].yang];
+  const upperYang = [lines[3].yang, lines[4].yang, lines[5].yang];
+
+  const trigramOrder = ['坤', '震', '坎', '兑', '艮', '离', '巽', '乾'];
+  const lowerIdx = (lowerYang[0] ? 1 : 0) | (lowerYang[1] ? 2 : 0) | (lowerYang[2] ? 4 : 0);
+  const upperIdx = (upperYang[0] ? 1 : 0) | (upperYang[1] ? 2 : 0) | (upperYang[2] ? 4 : 0);
+  const lowerTrigram = trigramOrder[lowerIdx];
+  const upperTrigram = trigramOrder[upperIdx];
+
+  // 找到对应的六十四卦
+  const hexagram = HEXAGRAMS.find(h => h.lower === lowerTrigram && h.upper === upperTrigram);
+  const changingLines = lines.filter(l => l.changing);
+
+  return {
+    lines: lines,
+    lowerTrigram: { name: lowerTrigram, ...BAGUA[lowerTrigram] },
+    upperTrigram: { name: upperTrigram, ...BAGUA[upperTrigram] },
+    hexagram: hexagram || HEXAGRAMS[0],
+    changingLines: changingLines,
+    hasChanging: changingLines.length > 0
+  };
+}

@@ -435,87 +435,112 @@ function renderRingProgress(score) {
   `;
 }
 
-// ========== 每日运势 ==========
+// ========== 抽签 + 八卦 ==========
 
-function initFortuneTab() {
-  // 预加载运势（切换时再渲染）
-}
+function initFortuneTab() {}
 
 function renderFortune() {
-  const profile = getProfile();
-  const fortune = getDailyFortune(profile);
-  const container = document.getElementById('panel-fortune');
-  if (!container) return;
+  // 不再动态渲染主结构，只清空之前的抽签和八卦结果
+  const drawResult = document.getElementById('draw-result');
+  const baguaResult = document.getElementById('bagua-result');
+  if (drawResult) { drawResult.style.display = 'none'; drawResult.innerHTML = ''; }
+  if (baguaResult) { baguaResult.style.display = 'none'; baguaResult.innerHTML = ''; }
+}
 
-  let html = '';
+/**
+ * 处理抽签
+ */
+function handleDrawStick() {
+  const today = new Date();
+  const seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+  const stick = drawStick(seed);
 
-  // 每日一签（始终显示）
-  const card = fortune.dailyCard;
-  const levelColors = {
-    '大吉': '#c9a96e', '吉': '#5cb85c', '中吉': '#4a90d9',
-    '小吉': '#f0ad4e', '平': '#888', '末吉': '#d9534f'
-  };
-  html += `
-    <div class="fortune-card daily-card">
-      <div class="card-badge" style="background:${levelColors[card.level] || '#888'}">${card.level}</div>
-      <h3>📜 每日一签</h3>
-      <div class="poem">${card.poem}</div>
-      <div class="explain">${card.explain}</div>
-    </div>
-  `;
+  const resultEl = document.getElementById('draw-result');
+  const areaEl = document.getElementById('draw-area');
 
-  // 个性化运势（需 profile）
-  if (fortune.personalized) {
-    const p = fortune.personalized;
-    html += `
-      <div class="fortune-card personal-card">
-        <h3>🔮 今日运势 <span style="color:${p.fortuneColor}">${p.fortuneLevel}</span></h3>
-        <div class="fortune-score" style="color:${p.fortuneColor}">${p.fortuneScore}</div>
-        <p class="fortune-desc">${p.fortuneDesc}</p>
-        <div class="fortune-meta">
-          <span>${p.zodiacEmoji} ${p.zodiacName}</span>
-          <span>🀄 ${p.stemBranch}</span>
-        </div>
-
-        <div class="yi-ji">
-          <div class="yi">
-            <h4>✅ 今日宜</h4>
-            <ul>${p.yi.map(item => `<li>${item}</li>`).join('')}</ul>
-          </div>
-          <div class="ji">
-            <h4>❌ 今日忌</h4>
-            <ul>${p.ji.map(item => `<li>${item}</li>`).join('')}</ul>
-          </div>
-        </div>
-
-        <div class="lucky-items">
-          <div class="lucky-item">
-            <span class="lucky-dot" style="background:${p.luckyColor}"></span>
-            <span>幸运色：${p.luckyColorName}</span>
-          </div>
-          <div class="lucky-item">
-            <span>🔢 幸运数字：${p.luckyNumber}</span>
-          </div>
-          <div class="lucky-item">
-            <span>🧭 幸运方向：${p.luckyDirection}</span>
-          </div>
-        </div>
-      </div>
-    `;
-  } else {
-    html += `
-      <div class="fortune-card personal-card empty-fortune">
-        <h3>🔮 个性化运势</h3>
-        <p class="empty-hint">
-          还没有你的个人信息，先去
-          <a href="#home" onclick="switchTab('home');window.location.hash='home';return false;">预测首页</a>
-          填写信息吧～填写后每日运势将根据你的星座和天干地支定制。
-        </p>
-      </div>
-    `;
+  // 动画：签筒抖动
+  const tube = document.getElementById('draw-tube');
+  if (tube) {
+    tube.classList.add('shaking');
+    setTimeout(() => tube.classList.remove('shaking'), 600);
   }
 
-  container.innerHTML = html;
+  // 延迟显示结果
+  setTimeout(() => {
+    const hex = stick.hexagram;
+    const levelColors = { '大吉': '#c9a96e', '吉': '#5cb85c', '中吉': '#4a90d9', '小吉': '#f0ad4e', '平': '#888', '末吉': '#d9534f', '凶': '#555' };
+
+    resultEl.innerHTML = `
+      <div class="stick-result">
+        <div class="stick-badge" style="background:${levelColors[stick.level] || '#888'}">第${stick.number}签 · ${stick.level}</div>
+        <div class="stick-hexagram">
+          <span class="hex-symbol">${hex.symbol}</span>
+          <span class="hex-name">${hex.name}</span>
+          <span class="hex-element">(${hex.element}卦)</span>
+        </div>
+        <div class="stick-poem">${stick.poem}</div>
+        <div class="stick-interpretation">${stick.interpretation}</div>
+        <div class="stick-details">
+          <div class="stick-detail-item"><span class="sd-label">💼 事业</span>${stick.career}</div>
+          <div class="stick-detail-item"><span class="sd-label">💕 感情</span>${stick.love}</div>
+          <div class="stick-detail-item"><span class="sd-label">🏥 健康</span>${stick.health}</div>
+        </div>
+      </div>
+    `;
+    resultEl.style.display = 'block';
+    resultEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, 700);
+}
+
+/**
+ * 处理八卦占卜
+ */
+function handleBagua() {
+  const seed = Date.now();
+  const result = divine(seed);
+
+  const resultEl = document.getElementById('bagua-result');
+  const hex = result.hexagram;
+
+  // 绘制六爻
+  let linesHtml = '';
+  for (let i = 5; i >= 0; i--) {
+    const line = result.lines[i];
+    const cls = line.yang ? 'yao yang' : 'yao yin';
+    const changeMark = line.changing ? ' ⭕' : '';
+    linesHtml += `<div class="${cls}">${line.yang ? '━━━━━' : '━━ ━━'}${changeMark}</div>`;
+  }
+
+  // 变卦
+  let changeHtml = '';
+  if (result.hasChanging) {
+    changeHtml = `<p class="bagua-change">变爻：第${result.changingLines.map(l => l.position).join('、')}爻动</p>`;
+  }
+
+  resultEl.innerHTML = `
+    <div class="bagua-result-inner">
+      <div class="hex-symbol-large">
+        <span>${BAGUA[result.upperTrigram.name].symbol}</span>
+        <span>${BAGUA[result.lowerTrigram.name].symbol}</span>
+      </div>
+      <div class="hex-name-large">${hex.name}</div>
+      <div class="yao-lines">${linesHtml}</div>
+      <div class="trigram-info">
+        <span>上卦：${result.upperTrigram.name}（${result.upperTrigram.nature}·${result.upperTrigram.element}）</span>
+        <span>下卦：${result.lowerTrigram.name}（${result.lowerTrigram.nature}·${result.lowerTrigram.element}）</span>
+      </div>
+      ${changeHtml}
+      <div class="hex-judgment">「${hex.judgment}」</div>
+      <div class="hex-interpretation">${hex.interpretation}</div>
+      <div class="stick-details">
+        <div class="stick-detail-item"><span class="sd-label">💼 事业</span>${hex.career}</div>
+        <div class="stick-detail-item"><span class="sd-label">💕 感情</span>${hex.love}</div>
+        <div class="stick-detail-item"><span class="sd-label">🏥 健康</span>${hex.health}</div>
+      </div>
+    </div>
+  `;
+  resultEl.style.display = 'block';
+  resultEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 // ========== 历史记录 ==========

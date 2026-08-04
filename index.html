@@ -14,7 +14,7 @@
   <nav class="nav-bar">
     <button class="nav-tab active" data-tab="home">🏠 预测首页</button>
     <button class="nav-tab" data-tab="result">📊 预测结果</button>
-    <button class="nav-tab" data-tab="fortune">🔮 每日运势</button>
+    <button class="nav-tab" data-tab="fortune">🎋 抽签占卜</button>
     <button class="nav-tab" data-tab="history">📋 历史记录</button>
   </nav>
 
@@ -204,12 +204,40 @@
       </div>
     </div>
 
-    <!-- ===== 面板3: 每日运势 ===== -->
+    <!-- ===== 面板3: 抽签 + 八卦占卜 ===== -->
     <div class="panel" id="panel-fortune">
-      <!-- 由 fortune.js 动态渲染 -->
-      <div class="empty-state">
-        <div class="empty-icon">🔮</div>
-        <p>加载中…</p>
+      <!-- 抽签区 -->
+      <div class="card draw-card">
+        <div class="card-header">
+          <h2>🎋 灵签千抽</h2>
+          <p>千支灵签，基于六十四卦演化。心诚则灵，每日一签。</p>
+        </div>
+        <div class="draw-area" id="draw-area">
+          <div class="draw-tube" id="draw-tube">
+            <div class="tube-visual">🎋</div>
+            <p class="tube-hint">诚心默念，摇动签筒</p>
+          </div>
+          <button class="btn btn-primary btn-draw" id="btn-draw" onclick="handleDrawStick()">
+            🎋 摇签
+          </button>
+          <p class="draw-note">每日首次抽签免费，同一天重复抽签结果相同</p>
+        </div>
+        <div class="draw-result" id="draw-result" style="display:none;"></div>
+      </div>
+
+      <!-- 八卦占卜区 -->
+      <div class="card bagua-card">
+        <div class="card-header">
+          <h2>☯️ 八卦占卜</h2>
+          <p>六爻起卦，参天地之理，断人生之事。</p>
+        </div>
+        <div class="bagua-area" id="bagua-area">
+          <button class="btn btn-primary btn-draw" id="btn-bagua" onclick="handleBagua()">
+            ☯️ 起卦
+          </button>
+          <p class="draw-note">随机起卦，心诚则灵</p>
+        </div>
+        <div class="bagua-result" id="bagua-result" style="display:none;"></div>
       </div>
     </div>
 
