@@ -1,0 +1,146 @@
+{
+  "会计学": {
+    "mapped": 96,
+    "avg_advantage": 6.2,
+    "pairs": 16,
+    "unis": 15
+  },
+  "计算机": {
+    "mapped": 94,
+    "avg_advantage": 4.5,
+    "pairs": 23,
+    "unis": 34
+  },
+  "电子信息": {
+    "mapped": 93,
+    "avg_advantage": 4.2,
+    "pairs": 23,
+    "unis": 30
+  },
+  "人工智能": {
+    "mapped": 93,
+    "avg_advantage": 4.1,
+    "pairs": 23,
+    "unis": 24
+  },
+  "集成电路": {
+    "mapped": 93,
+    "avg_advantage": 3.8,
+    "pairs": 18,
+    "unis": 11
+  },
+  "电气工程": {
+    "mapped": 92,
+    "avg_advantage": 3.5,
+    "pairs": 22,
+    "unis": 22
+  },
+  "软件工程": {
+    "mapped": 91,
+    "avg_advantage": 2.5,
+    "pairs": 21,
+    "unis": 19
+  },
+  "电子科学": {
+    "mapped": 91,
+    "avg_advantage": 2.4,
+    "pairs": 10,
+    "unis": 7
+  },
+  "口腔医学": {
+    "mapped": 90,
+    "avg_advantage": 1.9,
+    "pairs": 14,
+    "unis": 6
+  },
+  "自动化": {
+    "mapped": 90,
+    "avg_advantage": 1.9,
+    "pairs": 22,
+    "unis": 26
+  },
+  "法学": {
+    "mapped": 90,
+    "avg_advantage": 1.6,
+    "pairs": 22,
+    "unis": 20
+  },
+  "通信工程": {
+    "mapped": 89,
+    "avg_advantage": 1.2,
+    "pairs": 19,
+    "unis": 17
+  },
+  "微电子": {
+    "mapped": 89,
+    "avg_advantage": 0.8,
+    "pairs": 16,
+    "unis": 7
+  },
+  "机械工程": {
+    "mapped": 88,
+    "avg_advantage": 0.4,
+    "pairs": 13,
+    "unis": 9
+  },
+  "数学": {
+    "mapped": 87,
+    "avg_advantage": -0.7,
+    "pairs": 20,
+    "unis": 20
+  },
+  "临床医学": {
+    "mapped": 85,
+    "avg_advantage": -1.9,
+    "pairs": 19,
+    "unis": 11
+  },
+  "物理学": {
+    "mapped": 84,
+    "avg_advantage": -2.5,
+    "pairs": 19,
+    "unis": 13
+  },
+  "数据科学": {
+    "mapped": 84,
+    "avg_advantage": -2.7,
+    "pairs": 17,
+    "unis": 15
+  },
+  "统计学": {
+    "mapped": 84,
+    "avg_advantage": -2.8,
+    "pairs": 9,
+    "unis": 5
+  },
+  "经济学": {
+    "mapped": 84,
+    "avg_advantage": -2.9,
+    "pairs": 22,
+    "unis": 16
+  },
+  "金融学": {
+    "mapped": 83,
+    "avg_advantage": -3.1,
+    "pairs": 19,
+    "unis": 16
+  },
+  "材料科学": {
+    "mapped": 83,
+    "avg_advantage": -3.1,
+    "pairs": 20,
+    "unis": 15
+  },
+  "药学": {
+    "mapped": 68,
+    "avg_advantage": -14.4,
+    "pairs": 9,
+    "unis": 4
+  },
+  "土木工程": {
+    "mapped": 40,
+    "avg_advantage": -34.7,
+    "pairs": 8,
+    "unis": 5
+  }
+}

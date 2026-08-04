@@ -109,11 +109,11 @@ const UNIVERSITY_KEYWORDS = [
 // ========== 专业分类数据 ==========
 const MAJOR_CATEGORIES = {
   // 热门高薪专业
-  '计算机科学与技术': { category: '计算机/AI', score: 83, demand: '极高', outlook: '人工智能、互联网、金融科技等领域需求旺盛' },
-  '软件工程': { category: '计算机/AI', score: 84, demand: '极高', outlook: '全行业数字化转型的核心驱动力' },
-  '人工智能': { category: '计算机/AI', score: 83, demand: '极高', outlook: '未来十年最具发展潜力的方向之一' },
-  '数据科学': { category: '计算机/AI', score: 75, demand: '极高', outlook: '大数据时代，数据驱动决策成为主流' },
-  '数据科学与大数据技术': { category: '计算机/AI', score: 75, demand: '极高', outlook: '985投档线持续走高，就业薪资领先' },
+  '计算机科学与技术': { category: '计算机/AI', score: 94, demand: '极高', outlook: '人工智能、互联网、金融科技等领域需求旺盛' },
+  '软件工程': { category: '计算机/AI', score: 91, demand: '极高', outlook: '全行业数字化转型的核心驱动力' },
+  '人工智能': { category: '计算机/AI', score: 93, demand: '极高', outlook: '未来十年最具发展潜力的方向之一' },
+  '数据科学': { category: '计算机/AI', score: 84, demand: '极高', outlook: '大数据时代，数据驱动决策成为主流' },
+  '数据科学与大数据技术': { category: '计算机/AI', score: 84, demand: '极高', outlook: '985投档线持续走高，就业薪资领先' },
   '智能科学与技术': { category: '计算机/AI', score: 76, demand: '很高', outlook: '智能系统未来将渗入各行各业' },
   '物联网工程': { category: '计算机/AI', score: 64, demand: '很高', outlook: '万物互联时代的基础技术' },
   '网络空间安全': { category: '计算机/AI', score: 79, demand: '很高', outlook: '数字化时代的刚需，人才缺口巨大' },
@@ -121,31 +121,31 @@ const MAJOR_CATEGORIES = {
   '区块链工程': { category: '计算机/AI', score: 84, demand: '高', outlook: 'Web3和数字经济的核心基础设施' },
 
   // 电子信息类
-  '电子信息工程': { category: '电子信息', score: 81, demand: '很高', outlook: '通信、芯片、消费电子行业需求稳定' },
-  '通信工程': { category: '电子信息', score: 78, demand: '很高', outlook: '5G/6G建设持续推进，通信人才需求大' },
-  '电子科学与技术': { category: '电子信息', score: 74, demand: '很高', outlook: '芯片产业的战略重要性日益提升' },
-  '微电子科学与工程': { category: '电子信息', score: 96, demand: '很高', outlook: '国产芯片自主研发的核心专业，985投档线极高' },
-  '集成电路设计与集成系统': { category: '电子信息', score: 94, demand: '极高', outlook: '国家战略重点，长期利好，投档线直逼计算机' },
+  '电子信息工程': { category: '电子信息', score: 93, demand: '很高', outlook: '通信、芯片、消费电子行业需求稳定' },
+  '通信工程': { category: '电子信息', score: 89, demand: '很高', outlook: '5G/6G建设持续推进，通信人才需求大' },
+  '电子科学与技术': { category: '电子信息', score: 91, demand: '很高', outlook: '芯片产业的战略重要性日益提升' },
+  '微电子科学与工程': { category: '电子信息', score: 89, demand: '很高', outlook: '国产芯片自主研发的核心专业，985投档线极高' },
+  '集成电路设计与集成系统': { category: '电子信息', score: 93, demand: '极高', outlook: '国家战略重点，长期利好，投档线直逼计算机' },
   '光电信息科学与工程': { category: '电子信息', score: 66, demand: '高', outlook: '光通信和光学设备领域稳定增长' },
-  '电气工程及其自动化': { category: '电子信息', score: 76, demand: '高', outlook: '电网、新能源、智能制造领域需求大' },
-  '自动化': { category: '电子信息', score: 78, demand: '高', outlook: '工业4.0和智能制造的核心专业' },
+  '电气工程及其自动化': { category: '电子信息', score: 92, demand: '高', outlook: '电网、新能源、智能制造领域需求大' },
+  '自动化': { category: '电子信息', score: 90, demand: '高', outlook: '工业4.0和智能制造的核心专业' },
 
   // 医学类
-  '临床医学': { category: '医学', score: 93, demand: '极高', outlook: '医疗健康永远是人类刚需，985投档线极高' },
-  '口腔医学': { category: '医学', score: 95, demand: '极高', outlook: '收入可观，就业灵活度高的黄金专业' },
+  '临床医学': { category: '医学', score: 85, demand: '极高', outlook: '医疗健康永远是人类刚需，985投档线极高' },
+  '口腔医学': { category: '医学', score: 90, demand: '极高', outlook: '收入可观，就业灵活度高的黄金专业' },
   '基础医学': { category: '医学', score: 96, demand: '中高', outlook: '医学科研方向，适合学术路线，投档线低于临床' },
-  '药学': { category: '医学', score: 87, demand: '高', outlook: '制药行业稳定，研发岗前景好' },
+  '药学': { category: '医学', score: 68, demand: '高', outlook: '制药行业稳定，研发岗前景好' },
   '中医学': { category: '医学', score: 78, demand: '高', outlook: '国家大力扶持中医药发展，海外认可度提升' },
   '护理学': { category: '医学', score: 68, demand: '极高', outlook: '老龄化社会催生大量护理需求，投档线偏低但就业好' },
   '医学影像学': { category: '医学', score: 80, demand: '高', outlook: 'AI+医疗影像方向有新机会' },
   '公共卫生': { category: '医学', score: 76, demand: '高', outlook: '疫情后公共卫生体系建设加速' },
 
   // 金融经济类
-  '金融学': { category: '金融经济', score: 75, demand: '高', outlook: '金融行业核心岗位竞争激烈但回报丰厚' },
+  '金融学': { category: '金融经济', score: 83, demand: '高', outlook: '金融行业核心岗位竞争激烈但回报丰厚' },
   '金融工程': { category: '金融经济', score: 71, demand: '高', outlook: '量化金融方向，数理能力强者优势明显' },
-  '经济学': { category: '金融经济', score: 91, demand: '中高', outlook: '适用面广但需结合其他技能提升竞争力' },
+  '经济学': { category: '金融经济', score: 84, demand: '中高', outlook: '适用面广但需结合其他技能提升竞争力' },
   '国际经济与贸易': { category: '金融经济', score: 58, demand: '中', outlook: '全球化波动影响需求，跨境电商是新方向' },
-  '会计学': { category: '金融经济', score: 67, demand: '高', outlook: '稳定刚需，CPA持证者竞争力强' },
+  '会计学': { category: '金融经济', score: 96, demand: '高', outlook: '稳定刚需，CPA持证者竞争力强' },
   '财务管理': { category: '金融经济', score: 63, demand: '高', outlook: '企业财务数字化转型带来新机遇' },
 
   // 法律/管理类
@@ -164,17 +164,17 @@ const MAJOR_CATEGORIES = {
   '历史学': { category: '人文社科', score: 84, demand: '中低', outlook: '文化教育、文博产业、内容创作' },
 
   // 理科基础类
-  '数学与应用数学': { category: '基础理学', score: 92, demand: '中高', outlook: 'AI时代数学功底价值凸显，转行空间大' },
-  '物理学': { category: '基础理学', score: 91, demand: '中', outlook: '量子计算、半导体等前沿领域有高端需求' },
+  '数学与应用数学': { category: '基础理学', score: 87, demand: '中高', outlook: 'AI时代数学功底价值凸显，转行空间大' },
+  '物理学': { category: '基础理学', score: 84, demand: '中', outlook: '量子计算、半导体等前沿领域有高端需求' },
   '化学': { category: '基础理学', score: 83, demand: '中', outlook: '新能源材料和化工方向有稳定需求' },
   '生物科学': { category: '基础理学', score: 82, demand: '中', outlook: '生物医药和基因技术是未来方向' },
-  '统计学': { category: '基础理学', score: 86, demand: '很高', outlook: '数据科学时代的硬通货' },
+  '统计学': { category: '基础理学', score: 84, demand: '很高', outlook: '数据科学时代的硬通货' },
 
   // 工科传统类
-  '机械工程': { category: '传统工科', score: 92, demand: '中高', outlook: '智能制造升级带动新需求' },
+  '机械工程': { category: '传统工科', score: 88, demand: '中高', outlook: '智能制造升级带动新需求' },
   '土木工程': { category: '传统工科', score: 40, demand: '中', outlook: '基建增速放缓，但城市更新仍有空间' },
   '建筑学': { category: '传统工科', score: 56, demand: '中', outlook: '绿色建筑和智能设计是新方向' },
-  '材料科学与工程': { category: '传统工科', score: 78, demand: '中高', outlook: '新能源材料、半导体材料前景好' },
+  '材料科学与工程': { category: '传统工科', score: 83, demand: '中高', outlook: '新能源材料、半导体材料前景好' },
   '能源与动力工程': { category: '传统工科', score: 85, demand: '中高', outlook: '新能源转型带来增量机会' },
   '环境工程': { category: '传统工科', score: 68, demand: '中', outlook: '双碳目标下环保投入加大' },
 
@@ -327,11 +327,11 @@ const MAJOR_CATEGORIES = {
   '艺术与科技': { category: '艺术设计', score: 78, demand: '高', outlook: '科技艺术跨界，沉浸式体验产业爆发' },
 
   // ===== 基于985投档线数据的专业评分(2026) =====
-  '临床医学类': { category: '医学', score: 93, demand: '极高', outlook: '985投档均分700 — 医学精英之路' },
-  '口腔医学类': { category: '医学', score: 95, demand: '极高', outlook: '985投档均分669 — 口腔医学持续热门' },
+  '临床医学类': { category: '医学', score: 85, demand: '极高', outlook: '985投档均分700 — 医学精英之路' },
+  '口腔医学类': { category: '医学', score: 90, demand: '极高', outlook: '985投档均分669 — 口腔医学持续热门' },
   '基础医学类': { category: '医学', score: 96, demand: '高', outlook: '985投档均分652 — 医学研究基础' },
   '预防医学类': { category: '医学', score: 86, demand: '高', outlook: '985投档均分664 — 公共卫生人才紧缺' },
-  '药学类': { category: '医学', score: 87, demand: '高', outlook: '985投档均分652 — 药学研发前景好' },
+  '药学类': { category: '医学', score: 68, demand: '高', outlook: '985投档均分652 — 药学研发前景好' },
   '临床药学': { category: '医学', score: 83, demand: '高', outlook: '985投档均分651 — 临床药学新兴方向' },
   '生物医学科学': { category: '医学', score: 82, demand: '高', outlook: '985投档均分649 — 生物医学交叉学科' },
   '医学检验技术': { category: '医学', score: 72, demand: '高', outlook: '985投档线参考 — 第三方医检市场扩大' },
@@ -349,7 +349,7 @@ const MAJOR_CATEGORIES = {
   '智能制造工程': { category: '计算机/AI', score: 81, demand: '很高', outlook: '985投档均分646 — 制造强国核心' },
   '智能科学与技术': { category: '计算机/AI', score: 86, demand: '很高', outlook: '985投档均分663 — AI+科学前沿' },
   '数据科学与大数据技术': { category: '计算机/AI', score: 77, demand: '极高', outlook: '985投档均分631 — 大数据时代刚需' },
-  '计算机类': { category: '计算机/AI', score: 83, demand: '极高', outlook: '985投档均分674 — 计算机大类精英' },
+  '计算机类': { category: '计算机/AI', score: 94, demand: '极高', outlook: '985投档均分674 — 计算机大类精英' },
   '软件工程': { category: '计算机/AI', score: 83, demand: '极高', outlook: '985投档均分652 — 软件定义一切' },
   '网络空间安全': { category: '计算机/AI', score: 79, demand: '很高', outlook: '985投档均分639 — 网络安全人才缺口大' },
   '信息安全': { category: '计算机/AI', score: 76, demand: '很高', outlook: '985投档均分625 — 信息安全刚需' },
@@ -357,8 +357,8 @@ const MAJOR_CATEGORIES = {
   '空间信息与数字技术': { category: '计算机/AI', score: 83, demand: '中高', outlook: '985投档均分654 — 航天+IT复合' },
   '虚拟现实技术': { category: '计算机/AI', score: 76, demand: '很高', outlook: '985投档均分627 — VR/AR产业爆发前夜' },
 
-  '金融学类': { category: '金融经济', score: 75, demand: '高', outlook: '985投档均分661 — 金融核心赛道' },
-  '经济学类': { category: '金融经济', score: 91, demand: '高', outlook: '985投档均分661 — 经济学基础扎实' },
+  '金融学类': { category: '金融经济', score: 83, demand: '高', outlook: '985投档均分661 — 金融核心赛道' },
+  '经济学类': { category: '金融经济', score: 84, demand: '高', outlook: '985投档均分661 — 经济学基础扎实' },
   '国际经济与贸易': { category: '金融经济', score: 58, demand: '中', outlook: '985投档均分561 — 受全球化波动影响' },
   '财政学类': { category: '金融经济', score: 84, demand: '中高', outlook: '985投档均分657 — 财税体制稳定需求' },
   '保险学': { category: '金融经济', score: 73, demand: '中高', outlook: '985投档均分615 — 养老保险增长空间' },
