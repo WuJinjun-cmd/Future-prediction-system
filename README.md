@@ -169,3 +169,7 @@ Future-prediction-system/
 ## 📄 License
 
 MIT © 2025
+
+## 📎 附录 | Appendix
+
+- [📊 评分标准详细文档](docs/评分标准.html) — 五维评分体系、评级标准、算法公式、特殊规则完整说明（可在浏览器中打开并打印为 PDF）
