@@ -124,15 +124,15 @@ function handlePredict() {
   // 保存到历史
   savePrediction(result);
 
-  // 渲染结果
+  // 先切换到结果页（面板显示后 Canvas 才能获取正确尺寸）
+  switchTab('result');
+  window.location.hash = 'result';
+
+  // 渲染结果（在面板可见后进行，确保 Canvas 尺寸正确）
   renderResult(result);
 
   // 播放动画
   animateScoreNumber(result.total);
-
-  // 切换到结果页
-  switchTab('result');
-  window.location.hash = 'result';
 
   showToast('预测完成！✨', 'success');
 }
