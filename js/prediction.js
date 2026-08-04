@@ -196,12 +196,10 @@ function calcMBTI(type) {
  * 分数 → 评级
  */
 function getGrade(score) {
-  if (score >= 90) return { grade: 'S', label: '至尊之命', color: '#c9a96e', desc: '天选之人，前程不可限量！各方面条件都非常优越，未来成就值得期待。' };
-  if (score >= 82) return { grade: 'A', label: '上等之才', color: '#5cb85c', desc: '出类拔萃，发展潜力巨大。在适合自己的领域深耕，必有一番作为。' };
-  if (score >= 72) return { grade: 'B', label: '中上之资', color: '#4a90d9', desc: '基础扎实，稳步向前。找准方向持续努力，前途依然光明。' };
-  if (score >= 62) return { grade: 'C', label: '中等之运', color: '#f0ad4e', desc: '虽有挑战但并非无路。扬长避短，在适合自己的赛道发力，同样能取得成就。' };
-  if (score >= 50) return { grade: 'D', label: '待时之机', color: '#d9534f', desc: '眼下或许不是最好的时机，但命运从来不是一成不变。持续提升自我，等待转机。' };
-  return { grade: 'E', label: '蛰伏之期', color: '#888888', desc: '目前处于积累期，不要气馁。许多人都是大器晚成，关键是不放弃自己。' };
+  if (score >= 85) return { grade: '☀️', label: '你的前途一片光明！误闯天家', color: '#c9a96e', desc: '命格非凡，天选之人！各大维度表现优异，未来不可限量，大胆去闯吧。' };
+  if (score >= 70) return { grade: '🌤', label: '还可以，前途微亮', color: '#5cb85c', desc: '整体条件不错，有明确的上升通道。找对方向持续努力，光明就在前方。' };
+  if (score >= 55) return { grade: '🌥', label: '一般，前路一片迷茫', color: '#f0ad4e', desc: '目前的组合中规中矩，可能需要多一些尝试和探索。迷茫只是暂时的，找准赛道就有突破。' };
+  return { grade: '🌑', label: '前途暗的一下就睡着了', color: '#888888', desc: '眼下或许不是最顺的阶段，但黑暗之后必有黎明。蓄力待发，厚积薄发，也是一种策略。' };
 }
 
 /**
