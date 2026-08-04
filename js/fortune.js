@@ -33,14 +33,30 @@ function getDailyFortune(profile) {
  */
 function generatePersonalizedFortune(profile) {
   const zodiac = getZodiac(parseInt(profile.birthMonth), parseInt(profile.birthDay));
-  const sb = getYearStemBranch(parseInt(profile.birthYear) || new Date().getFullYear());
   const today = new Date();
   const daySeed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
 
-  // 基于星座和天干地支 + 日期计算综合运势指数
-  const zodiacBase = zodiac.score;
-  const stemBase = TIAN_GAN_SCORE[sb.tianGan].score;
-  const combinedBase = (zodiacBase + stemBase) / 2;
+  // 如果有完整出生信息，使用五行分析；否则退回到年柱
+  let stemBase, stemBranchName;
+  const year = parseInt(profile.birthYear) || new Date().getFullYear();
+  const month = parseInt(profile.birthMonth) || 1;
+  const day = parseInt(profile.birthDay) || 1;
+  const hour = profile.birthHour !== null && profile.birthHour !== undefined && profile.birthHour !== ''
+    ? parseInt(profile.birthHour) : new Date().getHours();
+
+  if (profile.birthMonth && profile.birthDay) {
+    // 完整五行分析
+    const wuxing = analyzeWuxing(year, month, day, hour);
+    stemBase = wuxing.score;
+    stemBranchName = wuxing.pillars.day.stemBranch;
+  } else {
+    // 退回到年柱
+    const sb = getYearStemBranch(year);
+    stemBase = TIAN_GAN_SCORE[sb.tianGan].score;
+    stemBranchName = sb.stemBranch;
+  }
+
+  // 基于星座和五行命理 + 日期计算综合运势指数
 
   // 日期波动（-15 ~ +15）
   const fluctuation = (seededRandom(daySeed) * 30 - 15);
@@ -84,7 +100,7 @@ function generatePersonalizedFortune(profile) {
   return {
     zodiacName: zodiac.name,
     zodiacEmoji: zodiac.emoji,
-    stemBranch: sb.stemBranch,
+    stemBranch: stemBranchName,
     fortuneScore,
     fortuneLevel,
     fortuneColor,

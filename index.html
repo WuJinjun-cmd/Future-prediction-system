@@ -26,7 +26,7 @@
       <div class="card">
         <div class="card-header">
           <h2>🎓 前途预测系统</h2>
-          <p>综合理性分析与玄学智慧，从五个维度评估你的未来发展潜力</p>
+          <p>综合理性分析与玄学智慧，从五个维度（含五行命理）评估你的未来发展潜力</p>
         </div>
 
         <div class="form-group">
@@ -48,7 +48,7 @@
             <label>📅 出生年份</label>
             <input type="number" class="form-input" id="input-birthyear"
               placeholder="例如：2000" min="1950" max="2020">
-            <span class="label-hint">用于计算天干地支</span>
+            <span class="label-hint">用于计算年柱天干地支</span>
           </div>
           <div class="form-group">
             <label>🗓 出生月份</label>
@@ -68,6 +68,23 @@
             <select class="form-select" id="input-birthday">
               <option value="">选择日期</option>
             </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>⏰ 出生小时</label>
+            <select class="form-select" id="input-birthhour">
+              <option value="">选择小时</option>
+            </select>
+            <span class="label-hint">用于确定时辰和时柱</span>
+          </div>
+          <div class="form-group">
+            <label>🕐 出生分钟</label>
+            <select class="form-select" id="input-birthminute">
+              <option value="">选择分钟</option>
+            </select>
+            <span class="label-hint">精确时辰定位</span>
           </div>
         </div>
 
@@ -210,7 +227,7 @@
   <script src="js/storage.js"></script>
   <script src="js/app.js"></script>
 
-  <!-- 动态生成日期下拉选项 -->
+  <!-- 动态生成日期/小时/分钟下拉选项 -->
   <script>
   (function() {
     const daySelect = document.getElementById('input-birthday');
@@ -220,6 +237,27 @@
         opt.value = d;
         opt.textContent = d + '日';
         daySelect.appendChild(opt);
+      }
+    }
+    const hourSelect = document.getElementById('input-birthhour');
+    if (hourSelect) {
+      for (let h = 0; h <= 23; h++) {
+        const opt = document.createElement('option');
+        opt.value = h;
+        const shichen = ['子时(夜半)','丑时(鸡鸣)','寅时(平旦)','卯时(日出)','辰时(食时)','巳时(隅中)',
+                         '午时(日中)','未时(日昳)','申时(晡时)','酉时(日入)','戌时(黄昏)','亥时(人定)'];
+        const idx = Math.floor((h + 1) / 2) % 12;
+        opt.textContent = h + '时 — ' + shichen[idx];
+        hourSelect.appendChild(opt);
+      }
+    }
+    const minSelect = document.getElementById('input-birthminute');
+    if (minSelect) {
+      for (let m = 0; m <= 59; m++) {
+        const opt = document.createElement('option');
+        opt.value = m;
+        opt.textContent = m + '分';
+        minSelect.appendChild(opt);
       }
     }
   })();

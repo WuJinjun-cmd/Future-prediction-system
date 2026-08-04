@@ -271,6 +271,209 @@ function getYearStemBranch(year) {
   };
 }
 
+// ========== 时辰映射 ==========
+/**
+ * 根据小时获取时辰地支
+ * 子时 23-00, 丑时 01-02, 寅时 03-04, 卯时 05-06, 辰时 07-08, 巳时 09-10,
+ * 午时 11-12, 未时 13-14, 申时 15-16, 酉时 17-18, 戌时 19-20, 亥时 21-22
+ */
+function getShichen(hour) {
+  const h = parseInt(hour);
+  if (isNaN(h) || h < 0 || h > 23) return null;
+  const zhiIndex = Math.floor(((h + 1) % 24) / 2);
+  return {
+    name: ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'][zhiIndex],
+    index: zhiIndex,
+    period: ['夜半(23-1)', '鸡鸣(1-3)', '平旦(3-5)', '日出(5-7)', '食时(7-9)', '隅中(9-11)',
+             '日中(11-13)', '日昳(13-15)', '晡时(15-17)', '日入(17-19)', '黄昏(19-21)', '人定(21-23)'][zhiIndex]
+  };
+}
+
+// ========== 日柱计算 ==========
+/**
+ * 计算日柱天干地支（基于公历日期）
+ * 以 1900年1月1日 = 甲戌日 为基准
+ */
+function getDayStemBranch(year, month, day) {
+  const baseDate = new Date(1900, 0, 1);
+  const targetDate = new Date(year, month - 1, day);
+  const diffDays = Math.round((targetDate - baseDate) / (1000 * 60 * 60 * 24));
+  // 1900-01-01 = 甲戌 = 干支序号 10 (甲戌在60甲子中排第11,0-indexed = 10)
+  const ganIndex = ((diffDays % 10) + 10) % 10;
+  const zhiIndex = ((diffDays % 12) + 10) % 12;
+  return {
+    tianGan: TIAN_GAN[(ganIndex + 10) % 10],
+    diZhi: DI_ZHI[(zhiIndex + 10) % 12],
+    stemBranch: TIAN_GAN[(ganIndex + 10) % 10] + DI_ZHI[(zhiIndex + 10) % 12],
+    ganIndex: (ganIndex + 10) % 10,
+    zhiIndex: (zhiIndex + 10) % 12
+  };
+}
+
+// ========== 时柱计算 ==========
+/**
+ * 根据日干和时辰地支计算时柱天干
+ * 五鼠遁口诀：甲己还加甲，乙庚丙作初，丙辛从戊起，丁壬庚子居，戊癸何方发，壬子是真途。
+ */
+function getHourStemBranch(dayGanIndex, hourZhiIndex) {
+  const hourStemStart = [0, 2, 4, 6, 8]; // 甲己→甲(0), 乙庚→丙(2), 丙辛→戊(4), 丁壬→庚(6), 戊癸→壬(8)
+  const group = Math.floor(dayGanIndex / 2); // 每两个天干一组
+  const ganIndex = (hourStemStart[group] + hourZhiIndex) % 10;
+  return {
+    tianGan: TIAN_GAN[ganIndex],
+    diZhi: DI_ZHI[hourZhiIndex],
+    stemBranch: TIAN_GAN[ganIndex] + DI_ZHI[hourZhiIndex],
+    ganIndex: ganIndex,
+    zhiIndex: hourZhiIndex
+  };
+}
+
+// ========== 月柱计算 ==========
+/**
+ * 根据年干和月份计算月柱
+ * 五虎遁口诀：甲己之年丙作首，乙庚之岁戊为头，丙辛必定寻庚起，丁壬壬位顺行流，若问戊癸何方发，甲寅之上好追求。
+ */
+function getMonthStemBranch(yearGanIndex, month) {
+  const monthStemStart = [2, 4, 6, 8, 0]; // 甲己→丙(2), 乙庚→戊(4), 丙辛→庚(6), 丁壬→壬(8), 戊癸→甲(0)
+  const group = Math.floor(yearGanIndex / 2);
+  const ganIndex = (monthStemStart[group] + month - 1) % 10;
+  const zhiIndex = (month + 1) % 12; // 正月建寅(2), 二月卯(3)...
+  return {
+    tianGan: TIAN_GAN[ganIndex],
+    diZhi: DI_ZHI[zhiIndex],
+    stemBranch: TIAN_GAN[ganIndex] + DI_ZHI[zhiIndex],
+    ganIndex: ganIndex,
+    zhiIndex: zhiIndex
+  };
+}
+
+// ========== 五行分析 ==========
+/** 五行相生关系 */
+const WUXING_SHENG = {
+  '木': '火', '火': '土', '土': '金', '金': '水', '水': '木'
+};
+
+/** 五行相克关系 */
+const WUXING_KE = {
+  '木': '土', '土': '水', '水': '火', '火': '金', '金': '木'
+};
+
+/** 五行属性特征（用于事业分析） */
+const WUXING_TRAITS = {
+  '木': { name: '木', emoji: '🌳', trait: '生发向上，创造力强', career: '教育、文化创意、医疗健康、生态环保', score_base: 80, color: '#5cb85c' },
+  '火': { name: '火', emoji: '🔥', trait: '热情奔放，行动力强', career: '传媒演艺、市场营销、餐饮娱乐、能源电力', score_base: 82, color: '#d9534f' },
+  '土': { name: '土', emoji: '🏔', trait: '稳重包容，诚信可靠', career: '房地产、建筑、金融、管理咨询', score_base: 78, color: '#f0ad4e' },
+  '金': { name: '金', emoji: '⚜️', trait: '刚毅果断，执行力强', career: '法律、金融、工程技术、精密制造', score_base: 84, color: '#c9a96e' },
+  '水': { name: '水', emoji: '💧', trait: '智慧灵动，适应力强', career: '学术研究、国际贸易、物流交通、信息技术', score_base: 80, color: '#4a90d9' }
+};
+
+/**
+ * 完整八字分析：年柱 + 月柱 + 日柱 + 时柱 → 五行强弱
+ */
+function analyzeWuxing(year, month, day, hour) {
+  // 四柱
+  const yearPillar = getYearStemBranch(year);
+  const monthPillar = getMonthStemBranch(yearPillar.ganIndex, month);
+  const dayPillar = getDayStemBranch(year, month, day);
+  const shichen = getShichen(hour);
+  const hourPillar = shichen ? getHourStemBranch(dayPillar.ganIndex, shichen.index) : null;
+
+  // 日主（日干五行）— 八字的核心
+  const dayMasterElement = TIAN_GAN_WUXING[dayPillar.tianGan];
+
+  // 统计天干五行出现次数
+  const ganElements = [yearPillar.tianGan, monthPillar.tianGan, dayPillar.tianGan];
+  if (hourPillar) ganElements.push(hourPillar.tianGan);
+
+  // 统计地支五行出现次数
+  const zhiElements = [yearPillar.diZhi, monthPillar.diZhi, dayPillar.diZhi];
+  if (hourPillar) zhiElements.push(hourPillar.diZhi);
+
+  // 五行计数
+  const wuxingCount = { '木': 0, '火': 0, '土': 0, '金': 0, '水': 0 };
+  ganElements.forEach(g => wuxingCount[TIAN_GAN_WUXING[g]]++);
+  zhiElements.forEach(z => wuxingCount[DI_ZHI_WUXING[z]] += 0.5); // 地支权重0.5
+
+  // 日主是否得令（月支五行与日主相同 → 得令）
+  const monthZhiElement = DI_ZHI_WUXING[monthPillar.diZhi];
+  const deLing = monthZhiElement === dayMasterElement;
+
+  // 计算五行得分（日主加分，相生加分，被克减分）
+  const wuxingScore = {};
+  for (const [el, count] of Object.entries(wuxingCount)) {
+    let score = count * 10;
+    if (el === dayMasterElement) score += deLing ? 15 : 5; // 日主加成
+    wuxingScore[el] = Math.round(score);
+  }
+
+  // 五行是否平衡（标准差越小越平衡）
+  const values = Object.values(wuxingScore);
+  const avg = values.reduce((a, b) => a + b, 0) / 5;
+  const variance = values.reduce((sum, v) => sum + Math.pow(v - avg, 2), 0) / 5;
+  const stdDev = Math.sqrt(variance);
+  const balance = Math.max(0, Math.round(100 - stdDev * 3)); // 平衡度 0-100
+
+  // 日主强弱
+  const dayMasterStrength = Math.min(100, Math.round(wuxingScore[dayMasterElement] * 4));
+
+  // 最强五行和最弱五行
+  const sorted = Object.entries(wuxingScore).sort((a, b) => b[1] - a[1]);
+  const strongest = sorted[0];
+  const weakest = sorted[4];
+
+  // 综合五行命理评分（日主强度 40% + 五行平衡 40% + 得令加成 20%）
+  const rawScore = dayMasterStrength * 0.4 + balance * 0.4 + (deLing ? 20 : 0);
+
+  return {
+    pillars: {
+      year: yearPillar,
+      month: monthPillar,
+      day: dayPillar,
+      hour: hourPillar
+    },
+    shichen: shichen,
+    dayMaster: {
+      element: dayMasterElement,
+      trait: WUXING_TRAITS[dayMasterElement].trait,
+      emoji: WUXING_TRAITS[dayMasterElement].emoji,
+      career: WUXING_TRAITS[dayMasterElement].career
+    },
+    wuxingCount: wuxingScore,
+    strongest: { element: strongest[0], ...WUXING_TRAITS[strongest[0]], count: strongest[1] },
+    weakest: { element: weakest[0], ...WUXING_TRAITS[weakest[0]], count: weakest[1] },
+    balance: balance,
+    dayMasterStrength: dayMasterStrength,
+    deLing: deLing,
+    score: Math.min(100, Math.max(30, Math.round(rawScore))),
+    advice: generateWuxingAdvice(dayMasterElement, wuxingScore, deLing, balance)
+  };
+}
+
+/**
+ * 生成五行建议
+ */
+function generateWuxingAdvice(dayMaster, wuxingCount, deLing, balance) {
+  const advices = [];
+  const dt = WUXING_TRAITS[dayMaster];
+
+  // 日主分析
+  advices.push(`你的日主为「${dt.emoji} ${dayMaster}」— ${dt.trait}。${deLing ? '日主得月令之气，根基扎实，发展有后劲。' : '日主不得月令，需借助外界平台和团队力量来发挥潜能。'}`);
+
+  // 五行平衡分析
+  if (balance >= 75) {
+    advices.push('你的五行分布均衡，性格和能力维度较为全面，适合多方面发展。');
+  } else if (balance >= 50) {
+    advices.push('五行略有偏颇，某方面特质突出，建议在优势领域深耕，同时适当补充短板。');
+  } else {
+    advices.push('五行分布不均，个性鲜明。不必强求面面俱到，找到适合自己的方向就是最好的。');
+  }
+
+  // 行业建议
+  advices.push(`五行视角下适合的方向：${dt.career}。顺应自身五行特质选择行业，事半功倍。`);
+
+  return advices;
+}
+
 // ========== 星座数据 ==========
 const ZODIAC_DATA = [
   {

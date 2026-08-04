@@ -79,6 +79,8 @@ function initForm() {
     document.getElementById('input-birthyear').value = profile.birthYear || '';
     document.getElementById('input-birthmonth').value = profile.birthMonth || '';
     document.getElementById('input-birthday').value = profile.birthDay || '';
+    document.getElementById('input-birthhour').value = profile.birthHour !== undefined ? profile.birthHour : '';
+    document.getElementById('input-birthminute').value = profile.birthMinute !== undefined ? profile.birthMinute : '';
     document.getElementById('input-mbti').value = profile.mbti || '';
   }
 
@@ -95,12 +97,16 @@ function initForm() {
 
 function handlePredict() {
   // 收集表单数据
+  const hourVal = document.getElementById('input-birthhour').value;
+  const minVal = document.getElementById('input-birthminute').value;
   const profile = {
     university: document.getElementById('input-university').value.trim(),
     major: document.getElementById('input-major').value.trim(),
     birthYear: parseInt(document.getElementById('input-birthyear').value) || null,
     birthMonth: parseInt(document.getElementById('input-birthmonth').value) || null,
     birthDay: parseInt(document.getElementById('input-birthday').value) || null,
+    birthHour: hourVal !== '' ? parseInt(hourVal) : null,
+    birthMinute: minVal !== '' ? parseInt(minVal) : null,
     mbti: document.getElementById('input-mbti').value.trim().toUpperCase()
   };
 
@@ -151,7 +157,7 @@ function renderResult(result) {
   // 各维度详情
   renderDimensionDetail('dim-uni', result.university, '大学');
   renderDimensionDetail('dim-major', result.major, '专业');
-  renderDimensionDetail('dim-stem', result.stemBranch, '天干地支');
+  renderDimensionDetail('dim-stem', result.stemBranch, '五行命理');
   renderDimensionDetail('dim-zodiac', result.zodiac, '星座');
   renderDimensionDetail('dim-mbti', result.mbti, 'MBTI');
 
@@ -185,8 +191,12 @@ function renderDimensionDetail(id, data, label) {
     name = data.name; score = data.score; detail = `${data.level || ''} · ${data.tier || ''}`;
   } else if (label === '专业') {
     name = data.name; score = data.score; detail = `${data.category || ''} · 需求${data.demand || '--'}`;
-  } else if (label === '天干地支') {
-    name = data.stemBranch; score = data.score; detail = `天干${data.tianGan}(${data.ganElement})${data.ganTrait}`;
+  } else if (label === '五行命理') {
+    const dm = data.dayMaster || {};
+    name = `日主${dm.emoji || ''}${dm.element || '?'} · ${data.stemBranch || ''}`;
+    score = data.score;
+    const wc = data.wuxingCount || {};
+    detail = `🌳${wc['木']||0} 🔥${wc['火']||0} 🏔${wc['土']||0} ⚜️${wc['金']||0} 💧${wc['水']||0} | ${data.deLing ? '得令' : '失令'} | 平衡${data.balance || 0}`;
   } else if (label === '星座') {
     name = `${data.emoji || ''} ${data.name}`; score = data.score; detail = data.trait || '';
   } else if (label === 'MBTI') {
@@ -240,7 +250,7 @@ function renderRadarChart(scores) {
   canvas.height = size;
   const cx = size / 2, cy = size / 2, r = size * 0.35;
 
-  const labels = ['大学', '专业', '天干地支', '星座', 'MBTI'];
+  const labels = ['大学', '专业', '五行命理', '星座', 'MBTI'];
   const count = labels.length;
   const levels = 5;
 

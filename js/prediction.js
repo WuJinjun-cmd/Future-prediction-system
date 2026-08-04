@@ -1,17 +1,17 @@
 /**
  * 前途预测系统 — 预测评分算法
- * 五维度等权重：大学、专业、天干地支、星座、MBTI
+ * 五维度等权重：大学、专业、五行命理、星座、MBTI
  */
 
 /**
  * 主预测函数
- * @param {Object} profile - { university, major, birthYear, birthMonth, birthDay, mbti }
+ * @param {Object} profile - { university, major, birthYear, birthMonth, birthDay, birthHour, birthMinute, mbti }
  * @returns {Object} 完整的预测结果
  */
 function calculateScore(profile) {
   const university = calcUniversity(profile.university || '');
   const major = calcMajor(profile.major || '');
-  const stemBranch = calcStemBranch(profile.birthYear || new Date().getFullYear());
+  const stemBranch = calcStemBranch(profile);
   const zodiac = calcZodiac(profile.birthMonth, profile.birthDay);
   const mbti = calcMBTI(profile.mbti || '');
 
@@ -114,27 +114,40 @@ function calcMajor(name) {
 }
 
 /**
- * 天干地支评分
+ * 五行命理评分（天干地支 + 五行分析）
  */
-function calcStemBranch(birthYear) {
-  const year = parseInt(birthYear) || new Date().getFullYear();
-  const sb = getYearStemBranch(year);
+function calcStemBranch(profile) {
+  const year = parseInt(profile.birthYear) || new Date().getFullYear();
+  const month = parseInt(profile.birthMonth) || 1;
+  const day = parseInt(profile.birthDay) || 1;
+  const hour = profile.birthHour !== null && profile.birthHour !== undefined && profile.birthHour !== ''
+    ? parseInt(profile.birthHour) : new Date().getHours();
 
-  const ganInfo = TIAN_GAN_SCORE[sb.tianGan];
-  const zhiInfo = DI_ZHI_SCORE[sb.diZhi];
-
-  // 天干占60%，地支占40%
-  const score = Math.round(ganInfo.score * 0.6 + zhiInfo.score * 0.4);
+  // 完整的五行分析
+  const wuxing = analyzeWuxing(year, month, day, hour);
 
   return {
     year: year,
-    tianGan: sb.tianGan,
-    diZhi: sb.diZhi,
-    stemBranch: sb.stemBranch,
-    ganTrait: ganInfo.trait,
-    zhiTrait: zhiInfo.trait,
-    ganElement: ganInfo.element,
-    score: score
+    month: month,
+    day: day,
+    hour: hour,
+    // 四柱
+    yearPillar: wuxing.pillars.year,
+    monthPillar: wuxing.pillars.month,
+    dayPillar: wuxing.pillars.day,
+    hourPillar: wuxing.pillars.hour,
+    shichen: wuxing.shichen,
+    stemBranch: wuxing.pillars.day.stemBranch, // 日柱作为代表
+    // 五行分析
+    dayMaster: wuxing.dayMaster,
+    strongest: wuxing.strongest,
+    weakest: wuxing.weakest,
+    wuxingCount: wuxing.wuxingCount,
+    balance: wuxing.balance,
+    dayMasterStrength: wuxing.dayMasterStrength,
+    deLing: wuxing.deLing,
+    wuxingAdvice: wuxing.advice,
+    score: wuxing.score
   };
 }
 
@@ -215,8 +228,19 @@ function generateAdvice({ university, major, stemBranch, zodiac, mbti, total }) 
     advices.push('💼 专业市场需求一般，可以考虑辅修热门技能或向交叉领域发展，拓宽就业面。');
   }
 
-  // 天干地支建议
-  advices.push(`🌟 命理天干「${stemBranch.tianGan}」属${stemBranch.ganElement}，${stemBranch.ganTrait}。地支「${stemBranch.diZhi}」${stemBranch.zhiTrait}。顺应天性选择发展方向，事半功倍。`);
+  // 五行命理建议
+  if (stemBranch.wuxingAdvice) {
+    stemBranch.wuxingAdvice.forEach(a => advices.push('🌟 ' + a));
+  }
+  // 四柱信息
+  const p = stemBranch;
+  if (p.yearPillar && p.dayPillar) {
+    advices.push(`🀄 八字四柱：${p.yearPillar.stemBranch}年 ${p.monthPillar.stemBranch}月 ${p.dayPillar.stemBranch}日${p.hourPillar ? ' ' + p.hourPillar.stemBranch + '时' : ''}。日主「${p.dayMaster.emoji}${p.dayMaster.element}」${p.dayMaster.trait}。`);
+  }
+  // 五行强弱
+  if (p.strongest && p.weakest) {
+    advices.push(`☯️ 五行分布：最强「${p.strongest.emoji}${p.strongest.element}」(${p.wuxingCount[p.strongest.element]})，最弱「${p.weakest.emoji}${p.weakest.element}」(${p.wuxingCount[p.weakest.element]})。${p.deLing ? '日主得令，根基深厚。' : '日主失令，宜借力发展。'}`);
+  }
 
   // 星座建议
   if (zodiac.advice) {
