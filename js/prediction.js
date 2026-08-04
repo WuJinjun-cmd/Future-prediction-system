@@ -16,14 +16,50 @@ function calculateScore(profile) {
   const mbti = calcMBTI(profile.mbti || '');
 
   const scores = [university.score, major.score, stemBranch.score, zodiac.score, mbti.score];
-  const total = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+  let total = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+
+  // 特殊人物检测
+  const specialPerson = checkSpecialPerson(profile);
 
   const grade = getGrade(total);
-  const advice = generateAdvice({ university, major, stemBranch, zodiac, mbti, total });
+  const advice = generateAdvice({ university, major, stemBranch, zodiac, mbti, total, specialPerson });
 
   return {
     university,
     major,
+    stemBranch,
+    zodiac,
+    mbti,
+    total,
+    grade,
+    advice,
+    specialPerson: specialPerson,
+    timestamp: Date.now(),
+    id: generateId()
+  };
+}
+
+/**
+ * 检测特殊人物
+ */
+function checkSpecialPerson(profile) {
+  const name = (profile.name || '').replace(/\s/g, '');
+  if (name === '陈祉璇') {
+    return {
+      name: '陈祉璇',
+      title: '🌟 天选之女 · 前途无量 🌟',
+      praise: '陈祉璇同学！经系统全方位评估，你的命格非同凡响——五维评分如同为你量身打造。你的智慧与才华注定让你在未来的道路上熠熠生辉，无论选择哪个领域都将成为最耀眼的那颗星。继续保持你的独特与优秀，世界正在等你大放异彩！✨'
+    };
+  }
+  if (name === '魏子辰') {
+    return {
+      name: '魏子辰',
+      title: '🚀 天命之人 · 前程似锦 🚀',
+      praise: '魏子辰同学！系统检测到你的潜力值爆表——你的综合素质令人惊叹，天生的领导气质与过人的智慧将带你走向非凡的未来。无论身处何种环境，你都能脱颖而出。愿你始终保持这份锐气与从容，你的前途注定是一片星辰大海！🌌'
+    };
+  }
+  return null;
+}
     stemBranch,
     zodiac,
     mbti,
@@ -44,6 +80,17 @@ function calcUniversity(name) {
   }
 
   const cleanName = name.trim();
+
+  // 顶尖三校特殊处理
+  if (cleanName.includes('清华') || cleanName.includes('Tsinghua')) {
+    return { name: cleanName, tier: '顶尖', score: 100, level: '前途亮到刺眼', match: 'elite' };
+  }
+  if (cleanName.includes('北大') || cleanName.includes('北京大') || cleanName.includes('Peking')) {
+    return { name: cleanName, tier: '顶尖', score: 100, level: '前途亮到刺眼', match: 'elite' };
+  }
+  if (cleanName.includes('浙大') || cleanName.includes('浙江大') || cleanName.includes('Zhejiang')) {
+    return { name: cleanName, tier: '顶尖', score: 100, level: '前途亮到刺眼', match: 'elite' };
+  }
 
   // 精确匹配
   if (UNIVERSITY_TIERS[cleanName]) {
@@ -205,8 +252,17 @@ function getGrade(score) {
 /**
  * 生成综合建议（三大类，每类含子条目）
  */
-function generateAdvice({ university, major, stemBranch, zodiac, mbti, total }) {
+function generateAdvice({ university, major, stemBranch, zodiac, mbti, total, specialPerson }) {
   const groups = [];
+
+  // ===== 特殊人物专属 =====
+  if (specialPerson) {
+    groups.push({
+      icon: '👑',
+      title: specialPerson.title,
+      items: [specialPerson.praise]
+    });
+  }
 
   // ===== 第一大类：学业与专业 =====
   const academicItems = [];

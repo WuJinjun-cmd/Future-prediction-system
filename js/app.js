@@ -74,6 +74,7 @@ function initForm() {
   // 加载已保存的 profile 回填表单
   const profile = getProfile();
   if (profile) {
+    document.getElementById('input-name').value = profile.name || '';
     document.getElementById('input-university').value = profile.university || '';
     document.getElementById('input-major').value = profile.major || '';
     document.getElementById('input-birthyear').value = profile.birthYear || '';
@@ -100,6 +101,7 @@ function handlePredict() {
   const hourVal = document.getElementById('input-birthhour').value;
   const minVal = document.getElementById('input-birthminute').value;
   const profile = {
+    name: document.getElementById('input-name').value.trim(),
     university: document.getElementById('input-university').value.trim(),
     major: document.getElementById('input-major').value.trim(),
     birthYear: parseInt(document.getElementById('input-birthyear').value) || null,
@@ -146,8 +148,24 @@ function handlePredict() {
 // ========== 结果渲染 ==========
 
 function renderResult(result) {
+  // 特殊人物横幅
+  const specialBanner = document.getElementById('special-banner');
+  if (result.specialPerson) {
+    specialBanner.style.display = 'block';
+    specialBanner.querySelector('.special-title').textContent = result.specialPerson.title;
+    specialBanner.querySelector('.special-praise').textContent = result.specialPerson.praise;
+  } else {
+    specialBanner.style.display = 'none';
+  }
+
   // 总分
   document.getElementById('result-total').textContent = result.total;
+  // 如果是顶尖三校用特殊颜色
+  if (result.university.score === 100 && result.university.level === '前途亮到刺眼') {
+    document.getElementById('result-total').style.color = '#ff6b00';
+  } else {
+    document.getElementById('result-total').style.color = '';
+  }
   document.getElementById('result-grade').textContent = result.grade.label;
   document.getElementById('result-grade').style.color = result.grade.color;
 

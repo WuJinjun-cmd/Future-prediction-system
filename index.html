@@ -30,6 +30,13 @@
         </div>
 
         <div class="form-group">
+          <label>👤 姓名（选填）</label>
+          <input type="text" class="form-input" id="input-name"
+            placeholder="请输入你的姓名" autocomplete="off">
+          <span class="label-hint">用于个性化预测</span>
+        </div>
+
+        <div class="form-group">
           <label>🏫 大学名称</label>
           <input type="text" class="form-input" id="input-university"
             placeholder="例如：清华大学、浙江大学…" autocomplete="off">
@@ -120,6 +127,12 @@
 
     <!-- ===== 面板2: 预测结果 ===== -->
     <div class="panel" id="panel-result">
+      <!-- 特殊人物横幅 -->
+      <div class="card special-banner" id="special-banner" style="display:none; background: linear-gradient(135deg, #fff9e6 0%, #fff3cc 100%); border-color: #c9a96e; text-align: center;">
+        <div class="special-title" style="font-size:20px;"></div>
+        <p class="special-praise" style="font-size:14px; color:#666; line-height:1.8; margin-top:8px;"></p>
+      </div>
+
       <div class="card result-header">
         <div class="result-total-wrapper">
           <svg class="ring-progress-svg" id="ring-progress" width="160" height="160" viewBox="0 0 160 160"></svg>
