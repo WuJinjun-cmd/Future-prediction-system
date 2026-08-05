@@ -10,7 +10,18 @@
  */
 function calculateScore(profile) {
   const university = calcUniversity(profile.university || '');
-  const major = calcMajor(profile.major || '');
+  let major = calcMajor(profile.major || '');
+
+  // 香港浸会大学传媒专业特殊处理：亚洲顶尖传播学院
+  if (profile.university && profile.major) {
+    const uni = profile.university.replace(/\s/g, '');
+    const mj = profile.major.replace(/\s/g, '');
+    if ((uni.includes('香港浸会') || uni.includes('浸会大学') || uni.includes('HKBU') || uni.includes('HongKongBaptist')) &&
+        (mj.includes('传媒') || mj.includes('传播') || mj.includes('新闻') || mj.includes('媒体') || mj.includes('广告') || mj.includes('公关') || mj.includes('影视') || mj.includes('广播') || mj.includes('电视') || mj.includes('编导') || mj.includes('播音') || mj.includes('主持') || mj.includes('记者') || mj.includes('新媒体') || mj.includes('出版') || mj.includes('数字媒体'))) {
+      major = { ...major, score: 100, category: '传媒/传播', demand: '极高', outlook: '香港浸会大学传理学院亚洲排名第一，传媒专业全球顶尖', match: 'elite_media' };
+    }
+  }
+
   const stemBranch = calcStemBranch(profile);
   const zodiac = calcZodiac(profile.birthMonth, profile.birthDay);
   const mbti = calcMBTI(profile.mbti || '');
