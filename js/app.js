@@ -158,6 +158,14 @@ function renderResult(result) {
     specialBanner.style.display = 'none';
   }
 
+  // 浸大传媒横幅
+  const hkbuBanner = document.getElementById('hkbu-banner');
+  if (result.hkbuMedia) {
+    hkbuBanner.style.display = 'block';
+  } else {
+    hkbuBanner.style.display = 'none';
+  }
+
   // 总分
   document.getElementById('result-total').textContent = result.total;
   // 如果是顶尖三校用特殊颜色

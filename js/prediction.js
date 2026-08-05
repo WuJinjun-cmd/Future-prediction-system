@@ -39,8 +39,11 @@ function calculateScore(profile) {
   // 特殊人物检测
   const specialPerson = checkSpecialPerson(profile);
 
+  // 香港浸会大学传媒专业检测
+  const hkbuMedia = (major.match === 'elite_media');
+
   const grade = getGrade(total);
-  const advice = generateAdvice({ university, major, stemBranch, zodiac, mbti, total, specialPerson });
+  const advice = generateAdvice({ university, major, stemBranch, zodiac, mbti, total, specialPerson, hkbuMedia });
 
   return {
     university,
@@ -52,6 +55,7 @@ function calculateScore(profile) {
     grade,
     advice,
     specialPerson: specialPerson,
+    hkbuMedia: hkbuMedia,
     timestamp: Date.now(),
     id: generateId()
   };
@@ -260,8 +264,21 @@ function getGrade(score) {
 /**
  * 生成综合建议（三大类，每类含子条目）
  */
-function generateAdvice({ university, major, stemBranch, zodiac, mbti, total, specialPerson }) {
+function generateAdvice({ university, major, stemBranch, zodiac, mbti, total, specialPerson, hkbuMedia }) {
   const groups = [];
+
+  // ===== 浸大传媒专属横幅 =====
+  if (hkbuMedia) {
+    groups.push({
+      icon: '📡',
+      title: '🎉 香港浸会大学传理学院 — 亚洲第一，前途无量！',
+      items: [
+        '香港浸会大学传理学院（School of Communication）位列亚洲传播学排名第一，全球前列。',
+        '传媒专业毕业生遍布全球顶级媒体（BBC、CNN、凤凰卫视、TVB），校友网络强大。',
+        '你的传媒之路从亚洲最顶尖的传播学院启程，前途不可限量——大胆追逐你的新闻理想！'
+      ]
+    });
+  }
 
   // ===== 特殊人物专属 =====
   if (specialPerson) {
